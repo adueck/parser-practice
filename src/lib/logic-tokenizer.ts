@@ -5,7 +5,6 @@ export function logicTokenize(l: string): LogicToken[] {
         .replace(/\(/g, " ( ")
         .replace(/\)/g, " ) ")
         .split(/\s+/).filter(x => x);
-    console.log(tokens);
     if (tokens.some(t => !logicTokens.includes(t as LogicToken))) {
         throw new Error("illegal token");
     }
