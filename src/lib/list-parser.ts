@@ -1,7 +1,7 @@
 import { tokenizer } from "./tokenizer";
 
 export function parseListString(l: string): List {
-    const tokens = tokenizer(l);
+    const tokens = tokenizer<ExpToken>(l);
     const { list, tokens: leftovers } = parseList(tokens);
     return list;
 }

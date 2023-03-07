@@ -1,7 +1,7 @@
 import { tokenizer } from "./tokenizer";
 
 export function parseExprString(l: string): Expr {
-    const tokens = tokenizer(l);
+    const tokens = tokenizer<ExpToken>(l);
     const { expr, tokens: tokensLeft } = parseExpr(tokens);
     return expr;
 }

@@ -1,10 +1,11 @@
-export function tokenizer(l: string): ExpToken[] {
+export function tokenizer<T extends number | string>(l: string): T[] {
     const chars = l.split("");
-    let tokens: ExpToken[] = [];
+    let tokens: T[] = [];
     let currentDigs = "";
     function cleanOutDigs() {
         if (currentDigs) {
-            tokens.push(parseInt(currentDigs));
+            // @ts-ignore
+            tokens.push(parseInt(currentDigs) as number);
             currentDigs = "";
         }
     }
@@ -18,7 +19,7 @@ export function tokenizer(l: string): ExpToken[] {
             continue;
         }
         cleanOutDigs();
-        tokens.push(char as ExpToken);
+        tokens.push(char as T);
     }
     cleanOutDigs();
     return tokens;

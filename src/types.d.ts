@@ -1,5 +1,8 @@
 type ExpOpToken = "+" | "-" | "*" | "/";
 type ExpToken = number | ExpOpToken | "(" | ")";
+type CListToken = number | ",";
+
+type CList = number[];
 
 type List = {
     op: "+"
