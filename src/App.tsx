@@ -4,6 +4,8 @@ import { parseExprString } from './lib/exp-parser';
 import CompilerShowCase from './components/CompilerShowcase';
 import { parseCListF } from './lib/clist-parser';
 import { parseTernary } from './lib/ternary-parser';
+import { logicParser } from './lib/logic-parser';
+import { logicEvaluator } from './lib/logic-evaluator';
 
 // TODO: need existential data types to be able to type an array like this?
 const compilers: any = [
@@ -32,8 +34,17 @@ C -> ε`,
 T -> ( T ) ? T : T
 B -> "t" | "f"    
 `,
-  }
-]
+  },
+  {
+    title: "Logic",
+    parser: logicParser,
+    evaluator: logicEvaluator,
+    grammar: `V -> E and V | E or V | E
+E -> not E | B
+B -> "t" | "f"
+`,
+  },
+];
 
 function App() {
   return <div>
