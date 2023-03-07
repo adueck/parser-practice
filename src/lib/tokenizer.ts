@@ -10,7 +10,7 @@ export function tokenizer<T extends number | string>(l: string): T[] {
         }
     }
     for (let char of chars) {
-        if (char === " ") {
+        if (char === " " || char === "\n" || char === "\t") {
             cleanOutDigs();
             continue;
         }

@@ -1,22 +1,12 @@
 import './App.css'
-import { evaluateCList, evaluateExpr, evaluateList } from './lib/evaluater';
+import { evaluateCList, evaluateExpr, evaluateTernary } from './lib/evaluator';
 import { parseExprString } from './lib/exp-parser';
 import CompilerShowCase from './components/CompilerShowcase';
-import { parseListString, parseListStringImp } from './lib/list-parser';
-import { parseCList, parseCListF } from './lib/clist-parser';
+import { parseCListF } from './lib/clist-parser';
+import { parseTernary } from './lib/ternary-parser';
 
-type CompilerData<T> = {
-  parser: (l: string) => T,
-  evaluator: (e: T) => number | string,
-  title: string,
-};
-
+// TODO: need existential data types to be able to type an array like this?
 const compilers: any = [
-  {
-    title: "List",
-    parser: parseListStringImp,
-    evaluator: evaluateList,
-  },
   {
     title: "Expression",
     parser: parseExprString,
@@ -27,6 +17,11 @@ const compilers: any = [
     parser: parseCListF,
     evaluator: evaluateCList,
   },
+  {
+    title: "Ternary",
+    parser: parseTernary,
+    evaluator: evaluateTernary,
+  }
 ]
 
 function App() {

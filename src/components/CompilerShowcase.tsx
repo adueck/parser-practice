@@ -23,16 +23,26 @@ function CompilerShowCase<T>({ parser, evaluator, title }: {
       setResult(e.message as string);
     }
   }
+  function handleTextChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
+    setText(e.target.value);
+  }
+  function handleClear() {
+    setText("");
+    setResult("");
+    setTree(undefined);
+  }
   return (
     <div className="App">
       <h4>{title}</h4>
       <form onSubmit={handleSubmit}>
-        <input
-          type="text"
+        <textarea
+          cols={20}
+          rows={5}
           value={text}
-          onChange={(e) => setText(e.target.value)}
+          onChange={handleTextChange}
         />
         <button type="submit">Calculate</button>
+        <button onClick={handleClear}>Clear</button>
       </form>
       <div>
         {result !== undefined && <pre>{result}</pre>}

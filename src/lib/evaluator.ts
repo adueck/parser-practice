@@ -1,12 +1,16 @@
-export function evaluateCList(clist: CList): number {
-    return clist.reduce((acc, curr) => acc+curr, 0);
+export function evaluateTernary(t: Ternary): string {
+    if (typeof t === "boolean") {
+        return t ? "TRUE" : "FALSE";
+    }
+    if (t.value) {
+        return evaluateTernary(t.if);
+    } else {
+        return evaluateTernary(t.else);
+    }
 }
 
-export function evaluateList(list: List): number {
-    if (typeof list === "number") {
-        return list;
-    }
-    return evaluateList(list.left) + list.right;
+export function evaluateCList(clist: CList): number {
+    return clist.reduce((acc, curr) => acc+curr, 0);
 }
 
 export function evaluateExpr(expr: Expr): number {

@@ -1,14 +1,15 @@
 type ExpOpToken = "+" | "-" | "*" | "/";
 type ExpToken = number | ExpOpToken | "(" | ")";
 type CListToken = number | ",";
+type TernaryToken = "t" | "f" | "?" | ":" | "(" | ")";
+
+type Ternary = {
+    value: Ternary,
+    if: Ternary,
+    else: Ternary,
+} | boolean;
 
 type CList = number[];
-
-type List = {
-    op: "+"
-    left: List,
-    right: number,
-} | number;
 
 type Expr = {
     op: "+",
