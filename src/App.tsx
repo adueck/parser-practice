@@ -41,7 +41,7 @@ B -> "t" | "f"
     evaluator: logicEvaluator,
     grammar: `V -> E and V | E or V | E
 E -> not E | B
-B -> "t" | "f"
+B -> "t" | "f" | ( V )
 `,
   },
 ];

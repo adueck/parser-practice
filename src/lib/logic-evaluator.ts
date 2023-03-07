@@ -17,5 +17,8 @@ function evalE(e: LogicE): boolean {
 }
 
 function evalB(e: LogicB): boolean {
+    if (Array.isArray(e)) {
+        return logicEvaluator(e[0]);
+    }
     return e;
 }

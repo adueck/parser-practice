@@ -8,6 +8,7 @@ export function logicParser(l: string): LogicV {
 function parseValue(tokens: LogicToken[]): LogicV {
     let t = [...tokens];
     const exp = parseExp();
+    console.log({ exp });
     if (t[0] === "and") {
         t.shift();
         return {
@@ -38,6 +39,11 @@ function parseValue(tokens: LogicToken[]): LogicV {
     }
     function parseB(): LogicB {
         const first = t.shift();
+        if (first === "(") {
+            const v = parseValue(t.slice(0, -1));
+            console.log({ v });
+            return [v];
+        }
         return first === "t";
     }
 }

@@ -2,7 +2,7 @@ type ExpOpToken = "+" | "-" | "*" | "/";
 type ExpToken = number | ExpOpToken | "(" | ")";
 type CListToken = number | ",";
 type TernaryToken = "t" | "f" | "?" | ":" | "(" | ")";
-type LogicToken = "f" | "t" | "and" | "or" | "not";
+type LogicToken = "f" | "t" | "and" | "or" | "not" | "(" | ")";
 
 type LogicV = {
     op: "and",
@@ -19,7 +19,7 @@ type LogicE = {
     value: LogicE,
 } | LogicB;
 
-type LogicB = true | false;
+type LogicB = true | false | [LogicV];
 
 type Ternary = {
     value: Ternary,
