@@ -1,9 +1,10 @@
 import { useState } from 'react';
 
-function CompilerShowCase<T>({ parser, evaluator, title }: {
+function CompilerShowCase<T>({ parser, evaluator, title, grammar }: {
     parser: (l: string) => T,
-    evaluator: (x: T) => (string | number),
+    evaluator: (x: T) => (string | number | boolean),
     title: string,
+    grammar: string,
 }) {
   const [text, setText] = useState("");
   const [result, setResult] = useState<number | string>("");
@@ -17,7 +18,8 @@ function CompilerShowCase<T>({ parser, evaluator, title }: {
     try {
       const e = parser(text);
       setTree(e);
-      setResult(evaluator(e));
+      const ev = evaluator(e);
+      setResult(typeof ev === "boolean" ? ev.toString() : ev);
     } catch(e) {
       // @ts-ignore
       setResult(e.message as string);
@@ -34,6 +36,11 @@ function CompilerShowCase<T>({ parser, evaluator, title }: {
   return (
     <div className="App">
       <h4>{title}</h4>
+      <pre>
+        <code>
+          {grammar}
+        </code>
+      </pre>
       <form onSubmit={handleSubmit}>
         <textarea
           cols={20}

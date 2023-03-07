@@ -1,12 +1,10 @@
-export function evaluateTernary(t: Ternary): string {
+export function evaluateTernary(t: Ternary): boolean {
     if (typeof t === "boolean") {
-        return t ? "TRUE" : "FALSE";
+        return t;
     }
-    if (t.value) {
-        return evaluateTernary(t.if);
-    } else {
-        return evaluateTernary(t.else);
-    }
+    return evaluateTernary(t.value)
+        ? evaluateTernary(t.if)
+        : evaluateTernary(t.else);
 }
 
 export function evaluateCList(clist: CList): number {
