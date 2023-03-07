@@ -13,7 +13,7 @@ const compilers: any = [
     evaluator: evaluateExpr,
   },
   {
-    title: "Comma Seperated List",
+    title: "Comma Separated List",
     parser: parseCListF,
     evaluator: evaluateCList,
   },
@@ -26,6 +26,7 @@ const compilers: any = [
 
 function App() {
   return <div>
+    <h1>Parser Practice</h2>
     {compilers.map((c: any) => (
       <CompilerShowCase
         title={c.title}
