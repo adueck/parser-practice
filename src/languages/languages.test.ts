@@ -5,7 +5,7 @@ languages.forEach((language) => {
         language.parsers.forEach((parser) => {
             describe(`with ${parser.label}`, () => {
                 language.tests.forEach((t) => {
-                    test(`${t.input} = ${t.value}`, () => {
+                    test(`${t.input} = ${JSON.stringify(t.value)}`, () => {
                         expect(
                             language.evaluator(
                                 parser.parser(
