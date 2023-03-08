@@ -2,11 +2,9 @@ import LanguageShowCase from './components/LanguageShowcase';
 import { languages } from './languages/languages';
 
 function App() {
-  return <div className="container pt-2 pb-4">
+  return <div className="container py-4">
     <h1>Parser Practice</h1>
-    <div className="mb-2">
-      <a href="https://github.com/adueck/parser-practice">Source Code</a>
-    </div>
+    <p className="lead">An exercise in writing parsers in TypeScript (<a href="https://github.com/adueck/parser-practice">source code</a>)</p>
     {languages.map((l) => (
       <LanguageShowCase
         title={l.name}

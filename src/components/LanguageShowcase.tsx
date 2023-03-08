@@ -38,7 +38,7 @@ function LanguageShowCase<T>({ tokenizer, parsers, evaluator, title, grammar, ex
   }
   return (
     <div className="mb-4" style={{ maxWidth: "40rem" }}>
-      <h3>{title}</h3>
+      <h2>{title}</h2>
       <h6>Grammar</h6>
       <pre>
         <code>
