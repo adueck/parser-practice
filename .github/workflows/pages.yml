@@ -41,6 +41,8 @@ jobs:
         uses: actions/configure-pages@v2
       - name: Install dependencies
         run: yarn
+      - name: Run tests
+        run: yarn test
       - name: Build with Vite
         run: yarn build
       - name: Upload artifact
