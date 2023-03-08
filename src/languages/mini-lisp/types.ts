@@ -1,11 +1,11 @@
 export const miniLispGrammar =
-`S -> number
+`S -> number | boolean
 S -> SL
 SL -> (F S S)
-F -> "+" | "-" | "*" | "/"`;
+F -> "+" | "-" | "*" | "/" | "<" | ">" | "="`;
 
 
-export type SExp = number | SL;
+export type SExp = number | boolean | SL;
 
 export type SL = [
     FExp,
@@ -13,5 +13,5 @@ export type SL = [
     SExp,
 ];
 
-export type FExp = "+" | "-" | "*" | "/";
+export type FExp = "+" | "-" | "*" | "/" | ">" | "<" | "=";
 
