@@ -1,5 +1,5 @@
 export const miniLispGrammar =
-`S -> number | boolean
+`S -> number | "t" | "f"
 S -> SL
 SL -> (F S S)
 F -> "+" | "-" | "*" | "/" | "<" | ">" | "="`;
