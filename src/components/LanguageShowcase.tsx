@@ -1,14 +1,17 @@
 import { useState } from 'react';
 
-function CompilerShowCase<T>({ parser, evaluator, title, grammar }: {
-    parser: (l: string) => T,
+function LanguageShowCase<T>({ tokenizer, parsers, evaluator, title, grammar, examples }: {
+    tokenizer: (l: string) => (string | number)[],
+    parsers: ((t: (string | number)[]) => T)[],
     evaluator: (x: T) => (string | number | boolean),
     title: string,
     grammar: string,
+    examples: { input: string, value: any }[],
 }) {
   const [text, setText] = useState("");
   const [result, setResult] = useState<number | string>("");
   const [tree, setTree] = useState<T | undefined>(undefined);
+  const [parser, setParser] = useState<number>(0);
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     handleCalculate();
@@ -16,7 +19,7 @@ function CompilerShowCase<T>({ parser, evaluator, title, grammar }: {
   function handleCalculate() {
     if (!text) return;
     try {
-      const e = parser(text);
+      const e = parsers[parser](tokenizer(text));
       setTree(e);
       const ev = evaluator(e);
       setResult(typeof ev === "boolean" ? ev.toString() : ev);
@@ -35,12 +38,19 @@ function CompilerShowCase<T>({ parser, evaluator, title, grammar }: {
   }
   return (
     <div className="App">
-      <h4>{title}</h4>
+      <h3>{title}</h3>
       <pre>
         <code>
           {grammar}
         </code>
       </pre>
+      <details>
+        <summary>Examples</summary>
+        {examples.map((ex) => <pre key={ex.input}>{`
+${ex.input}
+${`>>`} ${ex.value}`
+}</pre>)}
+      </details>
       <form onSubmit={handleSubmit}>
         <textarea
           cols={20}
@@ -48,8 +58,17 @@ function CompilerShowCase<T>({ parser, evaluator, title, grammar }: {
           value={text}
           onChange={handleTextChange}
         />
-        <button type="submit">Calculate</button>
-        <button onClick={handleClear}>Clear</button>
+        <div>
+        <select value={parser} onChange={e => setParser(parseInt(e.target.value))}>
+          {parsers.map((p, i) => (
+            <option value={i}>{p.name}</option>
+          ))}
+        </select>
+        </div>
+        <div>
+          <button type="submit">Calculate</button>
+          <button onClick={handleClear}>Clear</button>
+        </div>
       </form>
       <div>
         {result !== undefined && <pre>{result}</pre>}
@@ -62,4 +81,4 @@ function CompilerShowCase<T>({ parser, evaluator, title, grammar }: {
   );
 }
 
-export default CompilerShowCase;
+export default LanguageShowCase;

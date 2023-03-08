@@ -1,15 +1,8 @@
-export function evaluateTernary(t: Ternary): boolean {
-    if (typeof t === "boolean") {
-        return t;
-    }
-    return evaluateTernary(t.value)
-        ? evaluateTernary(t.if)
-        : evaluateTernary(t.else);
-}
-
-export function evaluateCList(clist: CList): number {
-    return clist.reduce((acc, curr) => acc+curr, 0);
-}
+import {
+    Expr,
+    Term,
+    Factor,
+} from "./types";
 
 export function evaluateExpr(expr: Expr): number {
     if (typeof expr === "object" && !Array.isArray(expr) && (expr.op === "+" || expr.op === "-")) {

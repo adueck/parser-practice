@@ -2,14 +2,16 @@
 // C -> n,C
 // C -> epsilon
 
-import { tokenizer } from "./tokenizer";
+import {
+    CList,
+} from "./types";
 
-export function parseCList(l: string): CList {
-    let tokens = tokenizer<CListToken>(l);
+export function parseCListImp(tokens: Readonly<(string|number)[]>): CList {
+    let t = [...tokens];
     let clist: CList = [];
-    while (tokens.length > 0) {
-        const first = tokens.shift();
-        const second = tokens.shift();
+    while (t.length > 0) {
+        const first = t.shift();
+        const second = t.shift();
         if (typeof first !== "number") {
             throw new Error("expected number");
         }
@@ -21,11 +23,7 @@ export function parseCList(l: string): CList {
     return clist;
 }
 
-export function parseCListF(l: string): CList {
-    return parseCTokens(tokenizer<CListToken>(l));
-}
-
-function parseCTokens(tokens: CListToken[]): CList {
+export function parseCListFunc(tokens: Readonly<(string|number)[]>): CList {
     if (tokens.length === 0) {
         return [];
     }
@@ -50,3 +48,8 @@ function parseCTokens(tokens: CListToken[]): CList {
     }
     return clist;
 }
+
+export default [
+    parseCListImp,
+    parseCListFunc,
+];

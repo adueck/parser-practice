@@ -1,11 +1,3 @@
-import { tokenizer } from "./tokenizer";
-
-export function parseExprString(l: string): Expr {
-    const tokens = tokenizer<ExpToken>(l);
-    const { expr, tokens: tokensLeft } = parseExpr(tokens);
-    return expr;
-}
-
 // The grammar
 
 // E -> E + T | E - T | T
@@ -21,6 +13,21 @@ export function parseExprString(l: string): Expr {
 // F -> (E) | digit
 
 // to remove left recursion
+
+import {
+    Expr,
+    Factor,
+    Term,
+} from "./types";
+type ExpToken = (string|number);
+
+export function parseExprF(tokens: (string|number)[]): Expr {
+    const { expr, tokens: tokensLeft } = parseExpr(tokens);
+    if (tokensLeft.length) {
+        throw new Error("trailing tokens");
+    }
+    return expr;
+}
 
 function parseExpr(tokens: ExpToken[]): {
     expr: Expr,
@@ -99,3 +106,6 @@ function parseFactor(tokens: ExpToken[]): {
     };
 }
 
+export default [
+    parseExprF,
+]

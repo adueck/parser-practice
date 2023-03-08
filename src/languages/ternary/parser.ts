@@ -1,16 +1,17 @@
+import {
+    Ternary
+} from "./types";
+
 // T -> boolean
 // T -> ( T ) ? T : T
 
-import { tokenizer } from "./tokenizer";
-
-export function parseTernary(l: string): Ternary {
-    const tokens = tokenizer<TernaryToken>(l);
+export function parseTernary(tokens: Readonly<(string|number)[]>): Ternary {
     const t = [...tokens];
     function ptf(): Ternary {
         const first = t.shift();
         // T -> boolean
-        if (first && ["t", "f"].includes(first)) {
-            if (![undefined, ")", ":"].includes(t[0])) {
+        if (first && ["t", "f"].includes(first as string)) {
+            if (![undefined, ")", ":"].includes(t[0] as string)) {
                 throw new Error("unexpected token after boolean");
             }
             return first === "t";
@@ -42,3 +43,5 @@ export function parseTernary(l: string): Ternary {
     }
     return ptf();
 }
+
+export default [parseTernary];

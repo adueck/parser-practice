@@ -1,3 +1,9 @@
+import {
+    LogicV,
+    LogicE,
+    LogicB,
+} from "./types";
+
 export function logicEvaluator(v: LogicV): boolean {
     if (typeof v === "object" && "op" in v) {
         if (v.op === "and") {

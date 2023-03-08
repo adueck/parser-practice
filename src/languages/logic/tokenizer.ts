@@ -1,6 +1,9 @@
-const logicTokens: LogicToken[] = ["t", "f", "and", "or", "not", "(", ")"];
+import {
+    LogicToken,
+    logicTokens,
+} from "./types";
 
-export function logicTokenize(l: string): LogicToken[] {
+export function logicTokenizer(l: string): LogicToken[] {
     const tokens = l.toLowerCase()
         .replace(/\(/g, " ( ")
         .replace(/\)/g, " ) ")
