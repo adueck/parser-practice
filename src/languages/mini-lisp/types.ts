@@ -1,7 +1,9 @@
-// S -> number
-// S -> SL
-// SL -> (F S S)
-// F -> "+" | "-" | "*" | "/"
+export const miniLispGrammar =
+`S -> number
+S -> SL
+SL -> (F S S)
+F -> "+" | "-" | "*" | "/"`;
+
 
 export type SExp = number | SL;
 

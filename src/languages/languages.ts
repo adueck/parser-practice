@@ -13,6 +13,11 @@ import { evaluateTernary } from "./ternary/evaluator";
 import { miniLispTokenizer } from "./mini-lisp/tokenizer";
 import miniLispParsers from "./mini-lisp/parser";
 import { evaluateSExp } from "./mini-lisp/evaluator";
+import { miniLispGrammar } from "./mini-lisp/types";
+import { ternaryGrammar } from "./ternary/types";
+import { expressionsGrammar } from "./expressions/types";
+import { logicGrammar } from "./logic/types";
+import { cListGrammar } from "./comma-list/types";
 
 export const languages: {
     name: string,
@@ -44,9 +49,7 @@ export const languages: {
                 value: 13,
             },
         ],
-        grammar: `C -> n
-C -> n,C
-C -> ε`,
+        grammar: cListGrammar,
     },
     {
         name: "logic",
@@ -75,9 +78,7 @@ C -> ε`,
                 value: false,
             },
         ],
-        grammar: `V -> E and V | E or V | E
-E -> not E | B
-B -> "t" | "f" | ( V )`,
+        grammar: logicGrammar,
     },
     {
         name: "expressions",
@@ -102,9 +103,7 @@ B -> "t" | "f" | ( V )`,
                 value: 123,
             },
         ],
-        grammar: `E -> E + T | E - T | T
-T -> T * F | T / F | F
-F -> (E) | number`,
+        grammar: expressionsGrammar,
     },
     {
         name: "ternary",
@@ -127,8 +126,7 @@ F -> (E) | number`,
                 value: false,
             },
         ],
-        grammar: `T -> ( T ) ? T : T
-T -> "t" | "f"`,
+        grammar: ternaryGrammar,
     },
     {
         name: "mini-lisp",
@@ -153,9 +151,6 @@ T -> "t" | "f"`,
                 value: 5,
             },
         ],
-        grammar: `S -> number
-S -> SL
-SL -> (F S S)
-F -> "+" | "-" | "*" | "/"`,
+        grammar: miniLispGrammar,
     },
 ];

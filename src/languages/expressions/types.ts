@@ -1,3 +1,8 @@
+export const expressionsGrammar =
+`E -> E + T | E - T | T
+T -> T * F | T / F | F
+F -> (E) | number`;
+
 export type Expr = {
     op: "+",
     left: Expr,

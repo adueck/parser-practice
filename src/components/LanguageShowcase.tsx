@@ -37,14 +37,15 @@ function LanguageShowCase<T>({ tokenizer, parsers, evaluator, title, grammar, ex
     setTree(undefined);
   }
   return (
-    <div className="App">
+    <div className="mb-4" style={{ maxWidth: "40rem" }}>
       <h3>{title}</h3>
+      <h6>Grammar</h6>
       <pre>
         <code>
           {grammar}
         </code>
       </pre>
-      <details>
+      <details className="mb-3">
         <summary>Examples</summary>
         {examples.map((ex) => <pre key={ex.input}>{`
 ${ex.input}
@@ -52,31 +53,41 @@ ${`>>`} ${ex.value}`
 }</pre>)}
       </details>
       <form onSubmit={handleSubmit}>
-        <textarea
-          cols={20}
-          rows={5}
-          value={text}
-          onChange={handleTextChange}
-        />
-        <div>
-        <select value={parser} onChange={e => setParser(parseInt(e.target.value))}>
-          {parsers.map((p, i) => (
-            <option value={i}>{p.label}</option>
-          ))}
-        </select>
+        <div className="mb-2">
+          <label className="form-label">Input:</label>
+          <textarea
+            className="form-control"
+            rows={5}
+            value={text}
+            onChange={handleTextChange}
+          />
         </div>
-        <div>
-          <button type="submit">Evaluate</button>
-          <button onClick={handleClear}>Clear</button>
+        <div className="d-flex flex-row justify-content-between">
+          <div>
+            <select
+              className="form-select"
+              value={parser}
+              onChange={e => setParser(parseInt(e.target.value))}
+            >
+              {parsers.map((p, i) => (
+                <option value={i}>{p.label}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <button className="btn btn-primary me-2" type="submit">Evaluate</button>
+            <button className="btn btn-secondary" onClick={handleClear}>Clear</button>
+          </div>
         </div>
       </form>
-      <div>
-        {result !== undefined && <pre>{result}</pre>}
-      </div>
-      {tree && <div style={{ textAlign: "left" }}>
+      {result !== "" && <div>
+        <div className="py-2">Result:</div>
+        <samp>{result}</samp>
+      </div>}
+      {tree && <div className="py-2">
         <details>
           <summary>AST</summary>
-          <pre>{JSON.stringify(tree, null, "  ")}</pre>
+          <pre className="mt-2">{JSON.stringify(tree, null, "  ")}</pre>
         </details>
       </div>}
     </div>

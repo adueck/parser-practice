@@ -1,3 +1,8 @@
+export const logicGrammar =
+`V -> E and V | E or V | E
+E -> not E | B
+B -> "t" | "f" | ( V )`;
+
 export const logicTokens = ["f", "t", "and", "or", "not", "(", ")"] as const;
 export type LogicToken = typeof logicTokens[number];
 
