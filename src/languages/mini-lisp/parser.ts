@@ -10,7 +10,7 @@ function parseMiniLisp(tokens: Readonly<(string|number)[]>): LP {
     return parseLP();
     function parseLP(): LP {
         const first = parseSExp();
-        if (t[0] === undefined && t[0] === ")") {
+        if (t[0] === undefined || t[0] === ")") {
             return [first];
         }
         return [first, ...parseLP()];
