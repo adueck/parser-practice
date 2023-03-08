@@ -10,6 +10,9 @@ import { evaluateCList } from "./comma-list/evaluator";
 import { ternaryTokenizer } from "./ternary/tokenizer";
 import ternaryParsers from "./ternary/parser";
 import { evaluateTernary } from "./ternary/evaluator";
+import { miniLispTokenizer } from "./mini-lisp/tokenizer";
+import miniLispParsers from "./mini-lisp/parser";
+import { evaluateSExp } from "./mini-lisp/evaluator";
 
 export const languages: {
     name: string,
@@ -126,5 +129,33 @@ F -> (E) | number`,
         ],
         grammar: `T -> ( T ) ? T : T
 T -> "t" | "f"`,
-    }
+    },
+    {
+        name: "mini-lisp",
+        tokenizer: miniLispTokenizer,
+        parsers: miniLispParsers,
+        evaluator: evaluateSExp,
+        tests: [
+            {
+                input: "5",
+                value: 5,
+            },
+            {
+                input: "(+ 1 5)",
+                value: 6,
+            },
+            {
+                input: "(* 2 (/ 10 2))",
+                value: 10,
+            },
+            {
+                input: "(- (* 2 (/ 10 2)) 5)",
+                value: 5,
+            },
+        ],
+        grammar: `S -> number
+S -> SL
+SL -> (F S S)
+F -> "+" | "-" | "*" | "/"`,
+    },
 ];

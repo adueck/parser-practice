@@ -5,7 +5,7 @@ import {
 // T -> boolean
 // T -> ( T ) ? T : T
 
-export function parseTernary(tokens: Readonly<(string|number)[]>): Ternary {
+export function parseTernaryF(tokens: Readonly<(string|number)[]>): Ternary {
     const t = [...tokens];
     function ptf(): Ternary {
         const first = t.shift();
@@ -44,4 +44,4 @@ export function parseTernary(tokens: Readonly<(string|number)[]>): Ternary {
     return ptf();
 }
 
-export default [parseTernary];
+export default [parseTernaryF];

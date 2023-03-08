@@ -66,7 +66,7 @@ ${`>>`} ${ex.value}`
         </select>
         </div>
         <div>
-          <button type="submit">Calculate</button>
+          <button type="submit">Evaluate</button>
           <button onClick={handleClear}>Clear</button>
         </div>
       </form>
@@ -74,8 +74,10 @@ ${`>>`} ${ex.value}`
         {result !== undefined && <pre>{result}</pre>}
       </div>
       {tree && <div style={{ textAlign: "left" }}>
-        {/* <pre>{toBrackets(expr)}</pre> */}
-        <pre>{JSON.stringify(tree, null, "  ")}</pre>
+        <details>
+          <summary>AST</summary>
+          <pre>{JSON.stringify(tree, null, "  ")}</pre>
+        </details>
       </div>}
     </div>
   );
