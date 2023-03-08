@@ -6,7 +6,7 @@ import {
 import inbuiltFunctions from "./inbuilt-functions";
 
 export function evaluateMiniLisp(lp: LP): (number | boolean)[] {
-    const varTable = {};
+    const varTable: Record<string, any> = {};
     return evaluateLP(lp);
     function evaluateLP(lp: LP): (number | boolean)[] {
         return lp.reduce((arr, s) => {
@@ -22,7 +22,9 @@ export function evaluateMiniLisp(lp: LP): (number | boolean)[] {
             return l;
         }
         if (typeof l === "string") {
-            // @ts-ignore
+            if (varTable[l] === undefined) {
+                throw new Error(`undefined variable ${l}`);
+            }
             return evaluateSExp(varTable[l]);
         }
         return evaluateSL(l);
@@ -32,7 +34,7 @@ export function evaluateMiniLisp(lp: LP): (number | boolean)[] {
         const [op, args] = sl;
         if (op === "d") {
             // @ts-ignore
-            varTable[args[0]] = args[1];
+            varTable[args[0]] = evaluateSExp(args[1]);
             return null;
         }
         const f = inbuiltFunctions[op];
