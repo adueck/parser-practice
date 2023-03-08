@@ -34,4 +34,9 @@ export function parseMiniLisp(tokens: Readonly<(string|number)[]>): SExp {
     }
 }
 
-export default [parseMiniLisp];
+export default [
+    {
+        parser: parseMiniLisp,
+        label: "parseMiniLisp",
+    },
+];

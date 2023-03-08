@@ -107,5 +107,8 @@ function parseFactor(tokens: ExpToken[]): {
 }
 
 export default [
-    parseExprF,
-]
+    {
+        parser: parseExprF,
+        label: "parseExpr",
+    },
+];

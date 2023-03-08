@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 function LanguageShowCase<T>({ tokenizer, parsers, evaluator, title, grammar, examples }: {
     tokenizer: (l: string) => (string | number)[],
-    parsers: ((t: (string | number)[]) => T)[],
+    parsers: { parser: ((t: (string | number)[]) => T), label: string }[],
     evaluator: (x: T) => (string | number | boolean),
     title: string,
     grammar: string,
@@ -19,7 +19,7 @@ function LanguageShowCase<T>({ tokenizer, parsers, evaluator, title, grammar, ex
   function handleCalculate() {
     if (!text) return;
     try {
-      const e = parsers[parser](tokenizer(text));
+      const e = parsers[parser].parser(tokenizer(text));
       setTree(e);
       const ev = evaluator(e);
       setResult(typeof ev === "boolean" ? ev.toString() : ev);
@@ -61,7 +61,7 @@ ${`>>`} ${ex.value}`
         <div>
         <select value={parser} onChange={e => setParser(parseInt(e.target.value))}>
           {parsers.map((p, i) => (
-            <option value={i}>{p.name}</option>
+            <option value={i}>{p.label}</option>
           ))}
         </select>
         </div>

@@ -47,5 +47,8 @@ function logicParserHalfF(tokens: LogicToken[]): LogicV {
 }
 
 export default [
-    logicParserHalfF,
+    {
+        parser: logicParserHalfF,
+        label: "logicParserHalfF",
+    },
 ];

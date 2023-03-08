@@ -44,4 +44,9 @@ export function parseTernaryF(tokens: Readonly<(string|number)[]>): Ternary {
     return ptf();
 }
 
-export default [parseTernaryF];
+export default [
+    {
+        parser: parseTernaryF,
+        label: "parseTernaryF",
+    },
+];

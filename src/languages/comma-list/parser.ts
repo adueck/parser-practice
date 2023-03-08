@@ -50,6 +50,12 @@ export function parseCListFunc(tokens: Readonly<(string|number)[]>): CList {
 }
 
 export default [
-    parseCListImp,
-    parseCListFunc,
+    {
+        parser: parseCListImp,
+        label: "parseCListImp",
+    },
+    {
+        parser: parseCListFunc,
+        label: "parseCListFunc",
+    },
 ];
