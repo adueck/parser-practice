@@ -1,13 +1,13 @@
 import { miniLispTokenizer } from "./tokenizer";
 import miniLispParsers from "./parser";
-import { evaluateLP } from "./evaluator";
+import { evaluateMiniLisp } from "./evaluator";
 import { miniLispGrammar } from "./grammar";
 
 export default {
     name: "mini-lisp",
     tokenizer: miniLispTokenizer,
     parsers: miniLispParsers,
-    evaluator: evaluateLP,
+    evaluator: evaluateMiniLisp,
     tests: [
         {
             input: "5",
@@ -32,6 +32,12 @@ export default {
         {
             input: "(- (* 2 (/ 10 2)) 5)",
             value: [5],
+        },
+        {
+            input: `(d a (+ 4 6))
+(d b (* a 2))
+(* b 5)`,
+            value: [100],
         },
         {
             input: `(= (< 10 (+ 10 3)) t (= t t))

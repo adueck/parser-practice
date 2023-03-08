@@ -25,7 +25,8 @@ function LanguageShowCase<T>({ tokenizer, parsers, evaluator, title, grammar, ex
       setResult(typeof ev === "boolean" ? ev.toString() : ev);
     } catch(e) {
       // @ts-ignore
-      setResult(e.message as string);
+      setResult("syntax error: " + e.message as string);
+      setTree(undefined)
     }
   }
   function handleTextChange(e: React.ChangeEvent<HTMLTextAreaElement>) {

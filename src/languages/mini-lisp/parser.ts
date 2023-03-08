@@ -20,6 +20,8 @@ function parseMiniLisp(tokens: Readonly<(string|number)[]>): LP {
             return t.shift() === "t";
         } else if (typeof t[0] === "number") {
             return t.shift() as number;
+        } else if (typeof t[0] === "string" && t[0] !== "(") {
+            return t.shift() as string;
         } else {
             return parseSL();
         }
