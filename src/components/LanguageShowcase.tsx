@@ -56,6 +56,7 @@ ${`>>`} ${JSON.stringify(ex.value)}`
         <div className="mb-2">
           <label className="form-label">Input:</label>
           <textarea
+            style={{ fontFamily: "monospace" }}
             className="form-control"
             rows={5}
             value={text}
