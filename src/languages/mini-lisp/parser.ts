@@ -9,11 +9,11 @@ function parseMiniLisp(tokens: Readonly<(string|number)[]>): LP {
     const t = [...tokens];
     return parseLP();
     function parseLP(): LP {
-        let sexps: SExp[] = [];
-        while (t[0] !== undefined && t[0] !== ")") {
-            sexps.push(parseSExp());
+        const first = parseSExp();
+        if (t[0] === undefined && t[0] === ")") {
+            return [first];
         }
-        return sexps;
+        return [first, ...parseLP()];
     }
     function parseSExp(): SExp {
         if (["t", "f"].includes(t[0] as string)) {
