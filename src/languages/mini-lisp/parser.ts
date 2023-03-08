@@ -9,10 +9,11 @@ function parseMiniLisp(tokens: Readonly<(string|number)[]>): LP {
     const t = [...tokens];
     return parseLP();
     function parseLP(): LP {
-        if (t.length === 0) {
-            return [];
+        let sexps: SExp[] = [];
+        while (t[0] !== undefined && t[0] !== ")") {
+            sexps.push(parseSExp());
         }
-        return [parseSExp(), ...parseLP()];
+        return sexps;
     }
     function parseSExp(): SExp {
         if (["t", "f"].includes(t[0] as string)) {
@@ -29,8 +30,7 @@ function parseMiniLisp(tokens: Readonly<(string|number)[]>): LP {
         const f = t.shift() as FExp;
         const sl: SL = [
             f,
-            parseSExp(),
-            parseSExp(),
+            parseLP(),
         ];
         const closing = t.shift();
         if (closing !== ")") throw new Error("expected )");

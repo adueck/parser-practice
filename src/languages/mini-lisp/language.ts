@@ -14,8 +14,16 @@ export default {
             value: [5],
         },
         {
-            input: "(+ 1 5)",
-            value: [6],
+            input: "(+ 1 5 4)",
+            value: [10],
+        },
+        {
+            input: "(< 1 2 3 4 5)",
+            value: [true],
+        },
+        {
+            input: "(< 1 2 4 3 5)",
+            value: [false],
         },
         {
             input: "(* 2 (/ 10 2))",
@@ -26,7 +34,7 @@ export default {
             value: [5],
         },
         {
-            input: `(= (< 10 (+ 10 3)) t)
+            input: `(= (< 10 (+ 10 3)) t (= t t))
 (* 2 4)
 f
 `,
