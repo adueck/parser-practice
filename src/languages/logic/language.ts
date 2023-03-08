@@ -1,7 +1,7 @@
 import { logicEvaluator } from "./evaluator";
 import logicParsers from "./parser";
 import { logicTokenizer } from "./tokenizer";
-import { logicGrammar } from "./types";
+import { logicGrammar } from "./grammar";
 
 export default {
     name: "logic",

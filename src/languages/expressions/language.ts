@@ -1,5 +1,5 @@
 
-import { expressionsGrammar } from "./types";
+import { expressionsGrammar } from "./grammar";
 import { expressionTokenizer } from "./tokenizer";
 import { evaluateExpr } from "./evaluator";
 import expressionParsers from "./parser";

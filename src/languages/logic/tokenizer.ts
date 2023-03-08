@@ -1,7 +1,7 @@
 import {
     LogicToken,
     logicTokens,
-} from "./types";
+} from "./grammar";
 
 export function logicTokenizer(l: string): LogicToken[] {
     const tokens = l.toLowerCase()

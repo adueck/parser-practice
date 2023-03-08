@@ -1,16 +1,21 @@
 import {
+    LP,
     SExp,
     SL,
-} from "./types";
+} from "./grammar";
 
-export function evaluateSExp(l: SExp): number | boolean {
+export function evaluateLP(lp: LP): (number | boolean)[] {
+    return lp.map(evaluateSExp);
+}
+
+function evaluateSExp(l: SExp): number | boolean {
     if (typeof l === "number" || typeof l === "boolean") {
         return l;
     }
     return evaluateSL(l);
 }
 
-export function evaluateSL(sl: SL): number | boolean {
+function evaluateSL(sl: SL): number | boolean {
     const [op, arg1, arg2] = sl;
     const v1 = evaluateSExp(arg1);
     const v2 = evaluateSExp(arg2);

@@ -2,11 +2,18 @@ import {
     FExp,
     SExp,
     SL,
-} from "./types";
+    LP,
+} from "./grammar";
 
-function parseMiniLisp(tokens: Readonly<(string|number)[]>): SExp {
+function parseMiniLisp(tokens: Readonly<(string|number)[]>): LP {
     const t = [...tokens];
-    return parseSExp();
+    return parseLP();
+    function parseLP(): LP {
+        if (t.length === 0) {
+            return [];
+        }
+        return [parseSExp(), ...parseLP()];
+    }
     function parseSExp(): SExp {
         if (["t", "f"].includes(t[0] as string)) {
             return t.shift() === "t";

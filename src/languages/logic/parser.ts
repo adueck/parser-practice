@@ -3,7 +3,7 @@ import {
     LogicE,
     LogicB,
     LogicToken,
-} from "./types";
+} from "./grammar";
 
 function logicParserHalfF(tokens: LogicToken[]): LogicV {
     let t = [...tokens];

@@ -4,7 +4,7 @@
 
 import {
     CList,
-} from "./types";
+} from "./grammar";
 
 export function parseCListImp(tokens: Readonly<(string|number)[]>): CList {
     let t = [...tokens];

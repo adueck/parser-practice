@@ -1,7 +1,7 @@
 import { cListTokenizer } from "./tokenizer";
 import cListParsers from "./parser";
 import { evaluateCList } from "./evaluator";
-import { cListGrammar } from "./types";
+import { cListGrammar } from "./grammar";
 
 export default {
     name: "comma separated lists",

@@ -2,7 +2,7 @@ import {
     LogicV,
     LogicE,
     LogicB,
-} from "./types";
+} from "./grammar";
 
 export function logicEvaluator(v: LogicV): boolean {
     if (typeof v === "object" && "op" in v) {

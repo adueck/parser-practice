@@ -1,7 +1,7 @@
 import { ternaryTokenizer } from "./tokenizer";
 import ternaryParsers from "./parser";
 import { evaluateTernary } from "./evaluator";
-import { ternaryGrammar } from "./types";
+import { ternaryGrammar } from "./grammar";
 
 export default {
     name: "ternary",

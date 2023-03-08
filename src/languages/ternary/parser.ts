@@ -1,6 +1,6 @@
 import {
     Ternary
-} from "./types";
+} from "./grammar";
 
 // T -> boolean
 // T -> ( T ) ? T : T

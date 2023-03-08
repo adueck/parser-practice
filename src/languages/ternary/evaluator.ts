@@ -1,6 +1,6 @@
 import {
     Ternary,
-} from "./types";
+} from "./grammar";
 
 export function evaluateTernary(t: Ternary): boolean {
     if (typeof t === "boolean") {

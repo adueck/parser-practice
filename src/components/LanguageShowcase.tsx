@@ -49,7 +49,7 @@ function LanguageShowCase<T>({ tokenizer, parsers, evaluator, title, grammar, ex
         <summary>Examples</summary>
         {examples.map((ex) => <pre key={ex.input}>{`
 ${ex.input}
-${`>>`} ${ex.value}`
+${`>>`} ${JSON.stringify(ex.value)}`
 }</pre>)}
       </details>
       <form onSubmit={handleSubmit}>
@@ -82,7 +82,7 @@ ${`>>`} ${ex.value}`
       </form>
       {result !== "" && <div>
         <div className="py-2">Result:</div>
-        <samp>{result}</samp>
+        <samp>{JSON.stringify(result)}</samp>
       </div>}
       {tree && <div className="py-2">
         <details>

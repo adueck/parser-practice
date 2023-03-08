@@ -18,7 +18,7 @@ import {
     Expr,
     Factor,
     Term,
-} from "./types";
+} from "./grammar";
 type ExpToken = (string|number);
 
 export function parseExprF(tokens: (string|number)[]): Expr {

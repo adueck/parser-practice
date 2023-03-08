@@ -2,7 +2,7 @@ import {
     Expr,
     Term,
     Factor,
-} from "./types";
+} from "./grammar";
 
 export function evaluateExpr(expr: Expr): number {
     if (typeof expr === "object" && !Array.isArray(expr) && (expr.op === "+" || expr.op === "-")) {
