@@ -1,27 +1,25 @@
 import {
-    FExp,
-    SExp,
-    SL,
-    LP,
+    SE, A, SP, SL,
 } from "./grammar";
 
-function parseMiniLisp(tokens: Readonly<(string|number)[]>): LP {
+// SP -> SE | SE SP
+// SE -> A | SL
+// SL -> ( SP )
+// A -> number | boolean | string
+
+function parseMiniLisp(tokens: Readonly<(string|number)[]>): SP {
     const t = [...tokens];
-    return parseLP();
-    function parseLP(): LP {
-        const first = parseSExp();
+    return parseSP();
+    function parseSP(): SP {
+        const first = parseSE();
         if (t[0] === undefined || t[0] === ")") {
             return [first];
         }
-        return [first, ...parseLP()];
+        return [first, ...parseSP()];
     }
-    function parseSExp(): SExp {
-        if (["t", "f"].includes(t[0] as string)) {
-            return t.shift() === "t";
-        } else if (typeof t[0] === "number") {
-            return t.shift() as number;
-        } else if (typeof t[0] === "string" && t[0] !== "(") {
-            return t.shift() as string;
+    function parseSE(): SE {
+        if (t[0] !== "(") {
+            return parseA();
         } else {
             return parseSL();
         }
@@ -29,14 +27,22 @@ function parseMiniLisp(tokens: Readonly<(string|number)[]>): LP {
     function parseSL(): SL {
         const opening = t.shift();
         if (opening !== "(") throw new Error("expected (");
-        const f = t.shift() as FExp;
-        const sl: SL = [
-            f,
-            parseLP(),
-        ];
+        const sl: SL = {
+            type: "s-exp",
+            content: parseSP(),
+        };
         const closing = t.shift();
         if (closing !== ")") throw new Error("expected )");
         return sl;
+    }
+    function parseA(): A {
+        const a = t.shift();
+        if (a === undefined) {
+            return "expected atom";
+        }
+        return ["t", "f", "true", "false"].includes(a as string)
+            ? (a === "t" || a === "true")
+            : a;
     }
 }
 

@@ -1,23 +1,24 @@
 export const miniLispGrammar =
 // TODO: better naming of non-terminals
-`LP -> S | S LP
-S -> number | "t" | "f" | var
-S -> SL
-SL -> (F LP)
-F -> "+" | "-" | "*" | "/" | "<" | ">" | "=" | "d"
-note:
- - "d" stands for define (for defining a variable)
- - variable names may only be one character
+`SP -> SE | SE SP
+SE -> A | SL
+SL -> ( SP )
+A -> number | boolean | string
+
+Note:
+ - The first SE in a SL must be a function or reference to a function
+ - inbuilt functions are + - * / = < > define
+ - variables are defined by (define varName SE)
 `;
 
-export type LP = SExp[];
 
-export type SExp = number | boolean | SL | string;
+export type SP = SE[];
 
-export type SL = [
-    FExp,
-    LP,
-];
+export type SE = A | SL;
 
-export type FExp = "+" | "-" | "*" | "/" | ">" | "<" | "=" | "d";
+export type SL = {
+    type: "s-exp",
+    content: SP,
+};
 
+export type A = boolean | string | number;

@@ -1,26 +1,29 @@
-export function tokenizer<T extends number | string>(l: string): T[] {
+const symbols = ["(", ")", "+", "-", "*", "/", "=", "<", ">", ","];
+
+export function tokenizer(l: string): (number | string)[] {
     const chars = l.split("");
-    let tokens: T[] = [];
-    let currentDigs = "";
-    function cleanOutDigs() {
-        if (currentDigs) {
-            // @ts-ignore
-            tokens.push(parseInt(currentDigs) as number);
-            currentDigs = "";
+    let tokens: (number | string)[] = [];
+    let currentChars = "";
+    function cleanOutChars() {
+        if (currentChars) {
+            const num = parseInt(currentChars);
+            tokens.push(isNaN(num) ? currentChars : num);
+            currentChars = "";
         }
     }
     for (let char of chars) {
         if (char === " " || char === "\n" || char === "\t") {
-            cleanOutDigs();
+            cleanOutChars();
             continue;
         }
-        if (char >= '0' && char <= '9') {
-            currentDigs += char;
-            continue;
+        if (symbols.includes(char)) {
+            cleanOutChars();
+            tokens.push(char);
         }
-        cleanOutDigs();
-        tokens.push(char as T);
+        else {
+            currentChars += char;
+        }
     }
-    cleanOutDigs();
+    cleanOutChars();
     return tokens;
 }

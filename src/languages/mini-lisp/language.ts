@@ -34,8 +34,8 @@ export default {
             value: [5],
         },
         {
-            input: `(d a (+ 4 6))
-(d b (* a 2))
+            input: `(define a (+ 4 6))
+(define b (* a 2))
 (* b 5)`,
             value: [100],
         },

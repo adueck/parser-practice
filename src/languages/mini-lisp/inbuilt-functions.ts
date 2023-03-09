@@ -1,4 +1,4 @@
-export default {
+const inbuiltFunctions: Record<string, any> = {
     "+": (...args: any[]) => {
         return args.reduce((acc, x) => acc + x, 0);
     },
@@ -39,3 +39,5 @@ export default {
         return lessThan(args);
     },
 }
+
+export default inbuiltFunctions;
