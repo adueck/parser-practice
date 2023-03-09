@@ -32,36 +32,28 @@ export function evaluateMiniLisp(sp: SP): (number | boolean)[] {
     function evaluateSL(sl: SL, localVars: VarTable): number | boolean | null {
         const { content } = sl;
         const [op, ...args] = content;
+        // SL is a define statement
         if (op === "define") {
-            const varName = args[0];
-            // TODO: allow lambda shorthand
-            if (typeof varName !== "string") {
-                throw new Error("variable name must be a string");
-            }
-            localVars[varName] = args[1];
+            evaluateDefine(sl, localVars);
             return null;
         }
+        if (op === "local") {
+            return evaluateLocal(args[0], args[1], localVars);
+        }
+        // SL is a regular SL, look for function
         if (typeof op === "string") {
-            // TODO: nicer handling of this
-            const f = localVars[op];
-            if (typeof f === "object" && f.content[0] === "lambda") {
-                return evaluateLambda(f, args, localVars);
+            const inBuiltF = inbuiltFunctions[op];
+            if (inBuiltF) {
+                return inBuiltF(...args.map(a => evaluateSE(a, localVars)));
             }
-            if (f !== undefined) {
-                throw new Error("first argument of SE must be a function");
-            }
-            const g = inbuiltFunctions[op];
-            if (!g) {
-                throw new Error("unknown operator/function");
-            }
-            // TODO: provide away to to do lazy evaluation of the arguments
-            // going into a function
-            return g(...args.map(a => evaluateSE(a, localVars)));
         }
-        if (typeof op === "object" && op.content[0] === "lambda") {
-            return evaluateLambda(op, args, localVars);
+        const opF = typeof op === "string"
+            ? localVars[op]
+            : op;
+        if (typeof opF === "object" && opF.content[0] === "lambda") {
+            return evaluateLambda(opF, args, localVars);
         }
-        throw new Error("first argument of SE must be a function");
+        throw new Error("first argument of SE must be a function")
     }
 
     function evaluateA(a: A, localVars: VarTable): number | boolean | null {
@@ -72,6 +64,46 @@ export function evaluateMiniLisp(sp: SP): (number | boolean)[] {
             throw new Error(`undefined variable ${a}`);
         }
         return evaluateSE(localVars[a], localVars);
+    }
+
+    function evaluateLocal(defines: SE, body: SE, localVars: VarTable): number | boolean | null {
+        if (typeof defines !== "object") {
+            throw new Error("defines section in local must be a list of define statements");
+        }
+        defines.content.forEach((line) => {
+            if (typeof line !== "object" || line.content[0] !== "define") {
+                throw new Error("each statement in defines section of local must be a define statement");
+            }
+            evaluateDefine(line, localVars);
+        });
+        return evaluateSE(body, localVars);
+    }
+
+    function evaluateDefine(sl: SL, localVars: VarTable) {
+        const [op, ...args] = sl.content;
+        const firstArg = args[0];
+        if (typeof firstArg === "object") {
+            // (define (x) ...) shorthand
+            const [fName, ...paramArgs] = firstArg.content;
+            if (typeof fName !== "string") {
+                throw new Error("function variable name must be a string");
+            }
+            console.log(args);
+            localVars[fName] = {
+                content: [
+                    "lambda",
+                    { content: paramArgs },
+                    args[1]
+                ],
+            };
+            console.log(localVars);
+        } else {
+            // regular define statement
+            if (typeof firstArg !== "string") {
+                throw new Error("variable name must be a string");
+            }
+            localVars[firstArg] = args[1];
+        }
     }
 
     function evaluateLambda(l: SE, args: SE[], localVars: VarTable): number | boolean | null {

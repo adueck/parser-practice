@@ -52,6 +52,18 @@ f
 `,
             value: [true, 8, false],
         },
+        {
+            input: `(local
+    ((define internalV1 10)
+     (define internalV2 20))
+(+ internalV1 internalV2))`,
+            value: [30],
+        },
+        {
+            input: `(define (average x y) (/ (+ x y) 2))
+(average 10 20)`,
+            value: [15],
+        },
     ],
     grammar: miniLispGrammar,
 };

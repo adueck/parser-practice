@@ -8,10 +8,12 @@ A -> number | boolean | string
 Semantic rules:
  - The first SE in a SL must be a function or reference to a function
  - inbuilt functions are + - * / = < >
- - variables are defined by (define varName SE)
- - lambda functions are defined by (lambda (a b c ...) SE)
+ - Racket/Scheme like:
+   - variable defs: (define varName SE)
+   - lambda functions: (lambda (a b c ...) SE)
+   - function def shorthand: (define (myF x ...) SE)
+   - local var definitions: (local ((define ...) ...) SE)
 `;
-
 
 export type SP = SE[];
 
