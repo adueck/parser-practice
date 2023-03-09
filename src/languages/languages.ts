@@ -15,9 +15,9 @@ export const languages: {
     }[],
     grammar: string,
 }[] = [
+    miniLispLanguage,
     logicLanguage,
     expressionLanguage,
-    miniLispLanguage,
     cListLanguage,
     ternaryLanguage,
 ];
