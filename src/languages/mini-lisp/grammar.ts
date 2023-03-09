@@ -18,7 +18,6 @@ export type SP = SE[];
 export type SE = A | SL;
 
 export type SL = {
-    type: "s-exp",
     content: SP,
 };
 

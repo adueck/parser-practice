@@ -28,7 +28,6 @@ function parseMiniLisp(tokens: Readonly<(string|number)[]>): SP {
         const opening = t.shift();
         if (opening !== "(") throw new Error("expected (");
         const sl: SL = {
-            type: "s-exp",
             content: parseSP(),
         };
         const closing = t.shift();

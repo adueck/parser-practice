@@ -54,6 +54,8 @@ export function evaluateMiniLisp(sp: SP): (number | boolean)[] {
             if (!g) {
                 throw new Error("unknown operator/function");
             }
+            // TODO: provide away to to do lazy evaluation of the arguments
+            // going into a function
             return g(...args.map(a => evaluateSE(a, localVars)));
         }
         if (typeof op === "object" && op.content[0] === "lambda") {
