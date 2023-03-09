@@ -38,6 +38,12 @@ const inbuiltFunctions: Record<string, any> = {
         }
         return lessThan(args);
     },
+    "if": (...args: any[]) => {
+        if (args.length < 3) {
+            throw new Error("if requires 3 arguments");
+        }
+        return args[0] ? args[1] : args[2];
+    },
 }
 
 export default inbuiltFunctions;

@@ -5,10 +5,11 @@ SE -> A | SL
 SL -> ( SP )
 A -> number | boolean | string
 
-Note:
+Semantic rules:
  - The first SE in a SL must be a function or reference to a function
- - inbuilt functions are + - * / = < > define
+ - inbuilt functions are + - * / = < >
  - variables are defined by (define varName SE)
+ - lambda functions are defined by (lambda (a b c ...) SE)
 `;
 
 

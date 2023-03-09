@@ -72,7 +72,7 @@ ${`>>`} ${JSON.stringify(ex.value)}`
               onChange={e => setParser(parseInt(e.target.value))}
             >
               {parsers.map((p, i) => (
-                <option value={i}>{p.label}</option>
+                <option value={i} key={i}>{p.label}</option>
               ))}
             </select>
           </div>

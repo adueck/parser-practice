@@ -26,10 +26,6 @@ export default {
             value: [false],
         },
         {
-            input: "(* 2 (/ 10 2))",
-            value: [10],
-        },
-        {
             input: "(- (* 2 (/ 10 2)) 5)",
             value: [5],
         },
@@ -38,6 +34,16 @@ export default {
 (define b (* a 2))
 (* b 5)`,
             value: [100],
+        },
+        {
+            input: `(define add1 (lambda (x) (+ x 1)))
+(add1 6)`,
+            value: [7],
+        },
+        {
+            input: `(define add (lambda (x y) (+ x y)))
+(add 2 4)`,
+            value: [6],
         },
         {
             input: `(= (< 10 (+ 10 3)) t (= t t))

@@ -14,6 +14,7 @@ function App() {
     </ol>
     {languages.map((l) => (
       <LanguageShowCase
+        key={l.name}
         title={l.name}
         tokenizer={l.tokenizer}
         evaluator={l.evaluator}
