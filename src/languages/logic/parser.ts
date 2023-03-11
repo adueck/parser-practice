@@ -5,9 +5,14 @@ import {
     LogicToken,
 } from "./grammar";
 
+// `V -> E and V | E or V | E
+// E -> not E | B
+// B -> "t" | "f" | ( V )`;
+
 function logicParserHalfF(tokens: LogicToken[]): LogicV {
     let t = [...tokens];
     const exp = parseExp();
+    console.log({ exp });
     if (t[0] === "and") {
         t.shift();
         return {
@@ -39,7 +44,11 @@ function logicParserHalfF(tokens: LogicToken[]): LogicV {
     function parseB(): LogicB {
         const first = t.shift();
         if (first === "(") {
-            const v = logicParserHalfF(t.slice(0, -1));
+            const v = logicParserHalfF(t);
+            const closing = t.shift();
+            // if (closing !== ")") {
+            //     throw new Error("expected )");
+            // }
             return [v];
         }
         return first === "t";
