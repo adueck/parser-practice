@@ -16,7 +16,6 @@ export const languages: {
     grammar: string,
 }[] = [
     miniLispLanguage,
-    // not quite working yet
     logicLanguage,
     expressionLanguage,
     cListLanguage,
