@@ -1,4 +1,4 @@
-// import logicLanguage from "./logic/language";
+import logicLanguage from "./logic/language";
 import miniLispLanguage from "./mini-lisp/language";
 import ternaryLanguage from "./ternary/language";
 import expressionLanguage from "./expressions/language";
@@ -17,7 +17,7 @@ export const languages: {
 }[] = [
     miniLispLanguage,
     // not quite working yet
-    // logicLanguage,
+    logicLanguage,
     expressionLanguage,
     cListLanguage,
     ternaryLanguage,

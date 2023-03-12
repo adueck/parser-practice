@@ -29,6 +29,10 @@ export default {
             input: "t and t and t and t and f",
             value: false,
         },
+        {
+            input: "not ((t and t) and (t and f)) and t",
+            value: true,
+        },
     ],
     grammar: logicGrammar,
 };

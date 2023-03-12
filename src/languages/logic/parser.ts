@@ -5,33 +5,37 @@ import {
     LogicToken,
 } from "./grammar";
 
-// `V -> E and V | E or V | E
+// V -> E and V | E or V | E
 // E -> not E | B
 // B -> "t" | "f" | ( V )`;
 
 function logicParserHalfF(tokens: LogicToken[]): LogicV {
     let t = [...tokens];
-    const exp = parseExp();
-    console.log({ exp });
-    if (t[0] === "and") {
-        t.shift();
-        return {
-            op: "and",
-            left: exp,
-            right: logicParserHalfF(t),
-        };
-    } else if (t[0] === "or") {
-        t.shift();
-        return {
-            op: "or",
-            left: exp,
-            right: logicParserHalfF(t),
+    return parseV();
+    function parseV(): LogicV {
+        const exp = parseExp();
+        const lookahead = t[0];
+        if (lookahead === "and") {
+            t.shift();
+            return {
+                op: "and",
+                left: exp,
+                right: parseV(),
+            };
+        } else if (lookahead === "or") {
+            t.shift();
+            return {
+                op: "or",
+                left: exp,
+                right: parseV(),
+            }
+        } else {
+            return exp;
         }
-    } else {
-        return exp;
     }
     function parseExp(): LogicE {
-        if (t[0] === "not") {
+        const lookahead = t[0];
+        if (lookahead === "not") {
             t.shift();
             return {
                 op: "not",
@@ -42,16 +46,25 @@ function logicParserHalfF(tokens: LogicToken[]): LogicV {
         }
     }
     function parseB(): LogicB {
-        const first = t.shift();
-        if (first === "(") {
-            const v = logicParserHalfF(t);
-            const closing = t.shift();
-            // if (closing !== ")") {
-            //     throw new Error("expected )");
-            // }
+        const lookahead = t[0];
+        if (lookahead === "(") {
+            match("(");
+            const v = parseV();
+            match(")");
             return [v];
         }
-        return first === "t";
+        const bToken = t.shift();
+        if (!bToken || !["t", "f", "true", "false"].includes(bToken)) {
+            throw new Error("expected boolean t/f/true/false");
+        }
+        return ["t", "true"].includes(bToken);
+    }
+
+    function match(m: string | number) {
+        const x = t.shift();
+        if (x !== m) {
+            throw new Error("expected "+ m);
+        }
     }
 }
 

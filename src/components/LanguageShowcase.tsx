@@ -14,9 +14,9 @@ function LanguageShowCase<T>({ tokenizer, parsers, evaluator, title, grammar, ex
   const [parser, setParser] = useState<number>(0);
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    handleCalculate();
+    handleCalculate(text);
   }
-  function handleCalculate() {
+  function handleCalculate(text: string) {
     if (!text) return;
     try {
       const e = parsers[parser].parser(tokenizer(text));
@@ -37,6 +37,10 @@ function LanguageShowCase<T>({ tokenizer, parsers, evaluator, title, grammar, ex
     setResult("");
     setTree(undefined);
   }
+  function loadExample(t: string) {
+    handleClear();
+    setText(t);
+  }
   return (
     <div className="mb-4" style={{ maxWidth: "40rem" }}>
       <h2>{title}</h2>
@@ -48,10 +52,17 @@ function LanguageShowCase<T>({ tokenizer, parsers, evaluator, title, grammar, ex
       </pre>
       <details className="mb-3">
         <summary>Examples</summary>
-        {examples.map((ex) => <pre key={ex.input}>{`
-${ex.input}
+        {examples.map((ex) => <div key={ex.input} className="d-flex flex-row align-items-center">
+          <button
+            className="btn btn-sm btn-light me-2"
+            onClick={() => loadExample(ex.input)}
+          >try</button>
+          <div>
+            <pre style={{ margin: "0.5rem 0", padding: "0" }}>{`${ex.input}
 ${`>>`} ${JSON.stringify(ex.value)}`
-}</pre>)}
+}</pre>
+          </div>
+      </div>)}
       </details>
       <form onSubmit={handleSubmit}>
         <div className="mb-2">
@@ -88,7 +99,7 @@ ${`>>`} ${JSON.stringify(ex.value)}`
       </div>}
       {tree && <div className="py-2">
         <details>
-          <summary>AST</summary>
+          <summary>Syntax Tree</summary>
           <pre className="mt-2">{JSON.stringify(tree, null, "  ")}</pre>
         </details>
       </div>}
