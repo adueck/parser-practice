@@ -1,7 +1,7 @@
 export const cListGrammar = `
 C -> [ES]
-ES -> E ES'
-ES' -> , ES | ε
+ES -> ε | E ES'
+ES' -> , ES
 E -> n | C`
 
 // if using double lookahead
