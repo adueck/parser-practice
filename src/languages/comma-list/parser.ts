@@ -5,8 +5,8 @@ import {
 } from "./grammar";
 
 // C -> [ES]
-// ES -> E ES'
-// ES' -> , ES | ε
+// ES -> ε | E ES'
+// ES' -> , ES
 // E -> n | C`
 
 export function parseCList(tokens: Readonly<(string|number)[]>): CList {
@@ -25,6 +25,9 @@ export function parseCList(tokens: Readonly<(string|number)[]>): CList {
         return c;
     }
     function parseES(): Element[] {
+        if (t.lookahead() === "]") {
+            return [];
+        }
         return [parseE(), ...parseESComma()];
     }
     function parseESComma(): Element[] {
