@@ -5,7 +5,7 @@
 export function useTokens(tokens: Readonly<(string|number)[]>): {
     lookahead: () => string | number | undefined,
     match: (t: string | number) => void,
-    consume: () => string | number | undefined,
+    consume: () => void,
     isEmpty: () => boolean,
 } {
     let [l, ...tt] = tokens;
@@ -17,9 +17,7 @@ export function useTokens(tokens: Readonly<(string|number)[]>): {
         consume();
     }
     function consume() {
-        const ol = ll;
         ll = tt.shift();
-        return ol;
     }
     function lookahead() {
         return ll;

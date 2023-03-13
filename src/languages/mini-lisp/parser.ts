@@ -38,7 +38,8 @@ function parseMiniLisp(tokens: Readonly<(string|number)[]>): SP {
         return sl;
     }
     function parseA(): A {
-        const a = t.consume();
+        const a = t.lookahead();
+        t.consume();
         if (a === undefined) {
             return "expected atom";
         }
