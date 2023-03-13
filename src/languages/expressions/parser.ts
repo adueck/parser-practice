@@ -14,96 +14,68 @@
 
 // to remove left recursion
 
+import { useTokens } from "../../lib/useTokens";
 import {
     Expr,
     Factor,
     Term,
 } from "./grammar";
-type ExpToken = (string|number);
 
 export function parseExprF(tokens: (string|number)[]): Expr {
-    const { expr, tokens: tokensLeft } = parseExpr(tokens);
-    if (tokensLeft.length) {
+    const t = useTokens(tokens);
+    const e = parseExpr();
+    if (!t.isEmpty()) {
         throw new Error("trailing tokens");
     }
-    return expr;
-}
+    return e;
 
-function parseExpr(tokens: ExpToken[]): {
-    expr: Expr,
-    tokens: ExpToken[],
-} {
-    // T E'
-    const { term: startingTerm, tokens: tokensRest } = parseTerm(tokens);
-    return parseExpRest(tokensRest, startingTerm);
-}
-
-function parseExpRest(tokens: ExpToken[], left: Expr): {
-    expr: Expr,
-    tokens: ExpToken[],
-} {
-    // + T E' | - T E'
-    if (tokens[0] === "+" || tokens[0] === "-") {
-        const { term, tokens: tokensRest } = parseTerm(tokens.slice(1));
-        return parseExpRest(tokensRest, {
-            op: tokens[0],
-            left,
-            right: term, 
-        });
+    function parseExpr(): Expr {
+        const term = parseTerm();
+        return parseEComma(term);
     }
-    // epsilon
-    return {
-        expr: left,
-        tokens,
-    };
-}
-
-function parseTerm(tokens: ExpToken[]): {
-    term: Term,
-    tokens: ExpToken[],
-} {
-    // F T'
-    const { factor: startingFactor, tokens: tokensRest } = parseFactor(tokens);
-    return parseTermRest(tokensRest, startingFactor);
-}
-
-function parseTermRest(tokens: ExpToken[], left: Term): {
-    term: Term,
-    tokens: ExpToken[],
-} {
-    // * F T' | * / F T'
-    if (tokens[0] === "*" || tokens[0] === "/") {
-        const { factor, tokens: tokensRest } = parseFactor(tokens.slice(1));
-        return parseTermRest(tokensRest, {
-            op: tokens[0],
-            left,
-            right: factor,
-        });
+    function parseEComma(left: Expr): Expr {
+        const op = t.lookahead();
+        if (op === "+" || op === "-") {
+            t.consume();
+            return parseEComma({
+                op,
+                left,
+                right: parseTerm(), 
+            });
+        }
+        return left;
     }
-    // epsilon
-    return {
-        term: left,
-        tokens: tokens.slice(0),
-    };
-}
-
-function parseFactor(tokens: ExpToken[]): {
-    factor: Factor,
-    tokens: ExpToken[],
-} {
-    // ( Expr )
-    if (tokens[0] === "(") {
-        const { expr, tokens: tokensRest } = parseExpr(tokens.slice(1));
-        return {
-            factor: [expr],
-            tokens: tokensRest.slice(1),
-        };
+    function parseTerm(): Term {
+        return parseTermComma(parseFactor());
     }
-    // Digit
-    return {
-        factor: tokens[0] as number,
-        tokens: tokens.slice(1),
-    };
+
+    function parseTermComma(left: Term): Term {
+        const op = t.lookahead();
+        if (op === "*" || op === "/") {
+            t.consume();
+            return parseTermComma({
+                op,
+                left,
+                right: parseFactor(),
+            });
+        }
+        return left;
+    }
+
+    function parseFactor(): Factor {
+        const l = t.lookahead();
+        if (l === "(") {
+            t.match("(");
+            const expr = parseExpr();
+            t.match(")");
+            return [expr];
+        }
+        if (typeof l !== "number") {
+            throw new Error("expected number");
+        }
+        t.consume();
+        return l;
+    }
 }
 
 export default [

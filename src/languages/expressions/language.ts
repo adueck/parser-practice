@@ -26,6 +26,10 @@ export default {
             input: "123",
             value: 123,
         },
+        {
+            input: "((100 + 2) / (10 / 5) - (((1))))",
+            value: 50,
+        },
     ],
     grammar: expressionsGrammar,
 };
