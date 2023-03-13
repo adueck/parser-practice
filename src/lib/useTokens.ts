@@ -4,7 +4,6 @@
  */
 export function useTokens(tokens: Readonly<(string|number)[]>): {
     lookahead: () => string | number | undefined,
-    t: () => Readonly<(string|number)[]>,
     match: (t: string | number) => void,
     consume: () => void,
 } {
@@ -27,7 +26,6 @@ export function useTokens(tokens: Readonly<(string|number)[]>): {
     }
     return {
         lookahead,
-        t,
         match,
         consume,
     };

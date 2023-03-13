@@ -10,34 +10,34 @@ import {
 // E -> n | C`
 
 export function parseCList(tokens: Readonly<(string|number)[]>): CList {
-    const { t, lookahead, match, consume } = useTokens(tokens);
+    const t = useTokens(tokens);
     
     const c = parseC();
-    if (t().length > 1) {
+    if (t.lookahead() !== undefined) {
         throw new Error("trailing tokens");
     }
     return c;
 
     function parseC(): CList {
-        match("[");
+        t.match("[");
         const c = parseES();
-        match("]");
+        t.match("]");
         return c;
     }
     function parseES(): Element[] {
         return [parseE(), ...parseESComma()];
     }
     function parseESComma(): Element[] {
-        if (lookahead() === ",") {
-            match(",");
+        if (t.lookahead() === ",") {
+            t.match(",");
             return parseES();
         }
         return [];
     }
     function parseE(): Element {
-        const l = lookahead();
+        const l = t.lookahead();
         if (typeof l === "number") {
-            consume();
+            t.consume();
             return l;
         }
         return parseC();
