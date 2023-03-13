@@ -6,6 +6,7 @@ export function useTokens(tokens: Readonly<(string|number)[]>): {
     lookahead: () => string | number | undefined,
     match: (t: string | number) => void,
     consume: () => void,
+    isEmpty: () => boolean,
 } {
     let [l, ...tt] = tokens;
     let ll: string | number | undefined = l;
@@ -21,12 +22,13 @@ export function useTokens(tokens: Readonly<(string|number)[]>): {
     function lookahead() {
         return ll;
     }
-    function t() {
-        return tt;
+    function isEmpty() {
+        return ll === undefined;
     }
     return {
         lookahead,
         match,
         consume,
+        isEmpty,
     };
 }

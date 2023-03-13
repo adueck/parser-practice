@@ -13,7 +13,7 @@ export function parseCList(tokens: Readonly<(string|number)[]>): CList {
     const t = useTokens(tokens);
     
     const c = parseC();
-    if (t.lookahead() !== undefined) {
+    if (!t.isEmpty()) {
         throw new Error("trailing tokens");
     }
     return c;

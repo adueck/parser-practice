@@ -10,7 +10,11 @@ import {
 
 function parseMiniLisp(tokens: Readonly<(string|number)[]>): SP {
     const t = useTokens(tokens);
-    return parseSP();
+    const sp = parseSP();
+    if (!t.isEmpty()) {
+        throw new Error("trailing tokens");
+    }
+    return sp;
     function parseSP(): SP {
         const first = parseSE();
         if (t.lookahead() === undefined || t.lookahead() === ")") {

@@ -13,7 +13,7 @@ import {
 function logicParserHalfF(tokens: LogicToken[]): LogicV {
     const t = useTokens(tokens);
     const v = parseV(t);
-    if (t.lookahead() !== undefined) {
+    if (!t.isEmpty()) {
         throw new Error("trailing tokens");
     }
     return v;
