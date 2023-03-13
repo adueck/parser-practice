@@ -10,16 +10,20 @@ export default {
     evaluator: evaluateCList,
     tests: [
         {
-            input: "4",
+            input: "[4]",
             value: 4,
         },
         {
-            input: "2,1,10",
+            input: "[2,1,10]",
             value: 13,
         },
         {
-            input: "2,1,10,",
-            value: 13,
+            input: "[2,1,10,2]",
+            value: 15,
+        },
+        {
+            input: "[2, 3, [1, 2, [10], 2], 5]",
+            value: 25,
         },
     ],
     grammar: cListGrammar,

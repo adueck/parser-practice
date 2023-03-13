@@ -1,5 +1,13 @@
-export const cListGrammar = `C -> n
-C -> n,C
-C -> ε`;
+export const cListGrammar = `
+C -> [ES]
+ES -> E ES'
+ES' -> , ES | ε
+E -> n | C`
 
-export type CList = number[];
+// if using double lookahead
+// ES -> n
+// ES -> n,C
+// ES -> ε`;
+
+export type CList = Element[];
+export type Element = number | CList;

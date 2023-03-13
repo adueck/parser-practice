@@ -45,7 +45,6 @@ function parseMiniLisp(tokens: Readonly<(string|number)[]>): SP {
     }
 }
 
-
 export default [
     {
         parser: parseMiniLisp,

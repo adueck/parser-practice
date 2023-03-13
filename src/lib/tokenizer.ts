@@ -1,4 +1,4 @@
-const symbols = ["(", ")", "+", "-", "*", "/", "=", "<", ">", ","];
+const symbols = ["(", ")", "+", "-", "*", "/", "=", "<", ">", ",", "[", "]"];
 
 export function tokenizer(l: string): (number | string)[] {
     const chars = l.split("");

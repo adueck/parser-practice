@@ -88,7 +88,6 @@ export function evaluateMiniLisp(sp: SP): (number | boolean)[] {
             if (typeof fName !== "string") {
                 throw new Error("function variable name must be a string");
             }
-            console.log(args);
             localVars[fName] = {
                 content: [
                     "lambda",
@@ -96,7 +95,6 @@ export function evaluateMiniLisp(sp: SP): (number | boolean)[] {
                     args[1]
                 ],
             };
-            console.log(localVars);
         } else {
             // regular define statement
             if (typeof firstArg !== "string") {
