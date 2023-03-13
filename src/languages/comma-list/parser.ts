@@ -1,3 +1,4 @@
+import { useTokens } from "../../lib/useTokens";
 import {
     CList,
     Element,
@@ -9,28 +10,15 @@ import {
 // E -> n | C`
 
 export function parseCList(tokens: Readonly<(string|number)[]>): CList {
-    let [l, ...t] = tokens;
-    let lookahead: string | number | undefined = l;
-
-    function match(t: string | number) {
-        if (lookahead !== t) {
-            throw new Error("expected "+t);
-        }
-        consume();
-    }
-
-    function consume() {
-        lookahead = t.shift();
-    }
-
+    const { t, lookahead, match, consume } = useTokens(tokens);
+    
     const c = parseC();
-    if (t.length > 1) {
+    if (t().length > 1) {
         throw new Error("trailing tokens");
     }
     return c;
 
     function parseC(): CList {
-        console.log(lookahead);
         match("[");
         const c = parseES();
         match("]");
@@ -40,17 +28,17 @@ export function parseCList(tokens: Readonly<(string|number)[]>): CList {
         return [parseE(), ...parseESComma()];
     }
     function parseESComma(): Element[] {
-        if (lookahead === ",") {
+        if (lookahead() === ",") {
             match(",");
             return parseES();
         }
         return [];
     }
     function parseE(): Element {
-        if (typeof lookahead === "number") {
-            const e = lookahead;
+        const l = lookahead();
+        if (typeof l === "number") {
             consume();
-            return e;
+            return l;
         }
         return parseC();
     }
