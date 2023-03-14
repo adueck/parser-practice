@@ -94,11 +94,8 @@ export function jsonParser(tokens: (string | number)[]): JsonData {
     }
 
     function parseString(): string {
-        console.log("will parse string");
-        console.log(t.lookahead());
         t.match('"');
         const s = t.lookahead();
-        console.log({ s });
         if (s === undefined) {
             throw new Error("expected string content after \"");
         }
