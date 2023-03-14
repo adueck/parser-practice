@@ -9,6 +9,7 @@ export function useTokens(tokens: Readonly<(string|number)[]>): {
     isEmpty: () => boolean,
 } {
     let [l, ...tt] = tokens;
+    console.log({ tokens });
     let ll: string | number | undefined = l;
     function match(t: string | number) {
         if (ll !== t) {

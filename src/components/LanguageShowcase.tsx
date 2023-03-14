@@ -41,6 +41,7 @@ function LanguageShowCase<T>({ tokenizer, parsers, evaluator, title, grammar, ex
     handleClear();
     setText(t);
   }
+  console.log({ result });
   return (
     <div className="mb-4" style={{ maxWidth: "40rem" }}>
       <h2>{title}</h2>
@@ -95,7 +96,7 @@ ${`>>`} ${JSON.stringify(ex.value)}`
       </form>
       {result !== "" && <div>
         <div className="py-2">Result:</div>
-        <samp>{JSON.stringify(result)}</samp>
+        <samp><pre>{JSON.stringify(result, null, "  ")}</pre></samp>
       </div>}
       {tree && <div className="py-2">
         <details>

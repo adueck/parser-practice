@@ -26,5 +26,13 @@ export default {
             value: 25,
         },
     ],
+    errors: [
+        "4]",
+        "[5",
+        "[2,10 12]",
+        "[2,10,]",
+        "[1,[2,3]",
+        ",",
+    ],
     grammar: cListGrammar,
 };

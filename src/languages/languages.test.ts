@@ -18,6 +18,13 @@ languages.forEach((language) => {
                         ).toEqual(t.value);
                     });
                 });
+                language.errors.forEach((e) => {
+                    test(`${e} is illegal`, () => {
+                        expect(() => {
+                            language.evaluator(parser.parser(language.tokenizer(e)))
+                        }).toThrow();
+                    });
+                });
             });
         });
     });

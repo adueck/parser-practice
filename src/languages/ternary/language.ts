@@ -24,5 +24,9 @@ export default {
             value: false,
         },
     ],
+    errors: [
+        "t ? t ? f",
+        "( t ) ? ( t : f",
+    ],
     grammar: ternaryGrammar,
 };

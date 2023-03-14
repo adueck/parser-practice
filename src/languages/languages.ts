@@ -3,6 +3,8 @@ import miniLispLanguage from "./mini-lisp/language";
 import ternaryLanguage from "./ternary/language";
 import expressionLanguage from "./expressions/language";
 import cListLanguage from "./comma-list/language";
+import jsonLanguage from "./json/language";
+// import romanNumeralsLanguage from "./roman-numerals.ts/language";
 
 export const languages: {
     name: string,
@@ -13,6 +15,7 @@ export const languages: {
         input: string,
         value: any,
     }[],
+    errors: string[],
     grammar: string,
 }[] = [
     miniLispLanguage,
@@ -20,4 +23,6 @@ export const languages: {
     expressionLanguage,
     cListLanguage,
     ternaryLanguage,
+    jsonLanguage,
+    // romanNumeralsLanguage,
 ];

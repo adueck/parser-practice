@@ -34,5 +34,8 @@ export default {
             value: true,
         },
     ],
+    errors: [
+        "not (t or f f",
+    ],
     grammar: logicGrammar,
 };

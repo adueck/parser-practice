@@ -5,9 +5,9 @@ import {
 } from "./grammar";
 
 // C -> [ES]
-// ES -> ε | E ES'
-// ES' -> , ES
-// E -> n | C`
+// ES -> ε | E ESTail
+// ESTail -> ε | , E ESTail
+// E -> n | C
 
 export function parseCList(tokens: Readonly<(string|number)[]>): CList {
     const t = useTokens(tokens);
@@ -28,12 +28,12 @@ export function parseCList(tokens: Readonly<(string|number)[]>): CList {
         if (t.lookahead() === "]") {
             return [];
         }
-        return [parseE(), ...parseESComma()];
+        return [parseE(), ...parseESTail()];
     }
-    function parseESComma(): Element[] {
+    function parseESTail(): Element[] {
         if (t.lookahead() === ",") {
             t.match(",");
-            return parseES();
+            return [parseE(), ...parseESTail()];
         }
         return [];
     }

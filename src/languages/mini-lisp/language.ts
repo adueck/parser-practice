@@ -65,5 +65,9 @@ f
             value: [15],
         },
     ],
+    errors: [
+        "(+ 3 2",
+        "3)",
+    ],
     grammar: miniLispGrammar,
 };

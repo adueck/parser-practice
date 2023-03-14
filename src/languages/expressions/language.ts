@@ -31,5 +31,9 @@ export default {
             value: 50,
         },
     ],
+    errors: [
+        "44 11",
+        "(2+3",
+    ],
     grammar: expressionsGrammar,
 };
