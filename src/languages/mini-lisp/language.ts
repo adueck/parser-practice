@@ -26,11 +26,12 @@ export default {
             value: [21],
         },
         {
-            input: `(- 10 1)
+            input: `(- 5)
+(- 10 1)
 (let (x 2)
   (let (y 3)
     (+ x y)))`,
-            value: [9, 5],            
+            value: [-5, 9, 5],            
         },
         {
             input: `(let (addMe (lambda (x y z) (+ (+ x y) z)))

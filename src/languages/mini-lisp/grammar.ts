@@ -22,9 +22,4 @@ export type SL = {
   content: SP,
 };
 
-export type Lambda = {
-  args: string[],
-  body: SE,
-};
-
 export type A = boolean | string | number;

@@ -1,5 +1,5 @@
 import {
-    SP, SE, SL, A, Lambda
+    SP, SE, SL, A,
 } from "./grammar";
 
 // SP -> SE | SE SP
@@ -9,6 +9,11 @@ import {
 
 type VarTable = Record<string, Value>;
 
+export type Lambda = {
+    args: string[],
+    body: SE,
+};
+
 type Value = number | boolean | Lambda;
 
 export function evaluateMiniLisp(sp: SP): Value[] {
@@ -16,6 +21,7 @@ export function evaluateMiniLisp(sp: SP): Value[] {
 
     // evaluate root SP
     return sp.reduce((arr, s) => {
+        // check for top-level defines here
         const v = evaluateSE(s, varTable);
         return v === null
             ? arr
@@ -36,25 +42,44 @@ export function evaluateMiniLisp(sp: SP): Value[] {
             throw new Error("first element of S-Expr must be function name");
         }
         if (["+", "-", "*", "/", "=", "<", ">"].includes(f as string)) {
+            function getNum(se: SE): number {
+                const n = evaluateSE(se, localVars);
+                if (typeof n !== "number") {
+                    throw new Error("each argument must be a number");
+                }
+                return n;
+            }
+            if (f === "+") {
+                return elems.reduce<number>((val, e) => {
+                    return val + getNum(e);
+                }, 0);
+            }
+            if (f === "-") {
+                if (elems.length === 1) {
+                    return - getNum(elems[0]);
+                }
+                return elems.slice(1).reduce<number>((val, e) => {
+                    return val - getNum(e);
+                }, getNum(elems[0]));
+            }
+            if (f === "*") {
+                return elems.reduce<number>((val, e) => {
+                    return val * getNum(e);
+                }, 1);
+            }
+            if (f === "/") {
+                if (elems.length < 1) {
+                    throw new Error("/ expects at least one argument");
+                }
+                return elems.slice(1).reduce<number>((val, e) => {
+                    return val * getNum(e);
+                }, getNum(elems[0]));
+            }
+            // TODO: reduce / multi arg here
             const a = evaluateSE(elems[0], localVars);
             const b = evaluateSE(elems[1], localVars);
             if (f === "=") {
                 return a === b;
-            }
-            if (typeof a !== "number" || typeof b !== "number") {
-                throw new Error("arguments must be numbers");
-            }
-            if (f === "+") {
-                return a + b;
-            }
-            if (f === "-") {
-                return a - b;
-            }
-            if (f === "*") {
-                return a * b;
-            }
-            if (f === "/") {
-                return a / b;
             }
             if (f === ">") {
                 return a > b;
@@ -64,6 +89,9 @@ export function evaluateMiniLisp(sp: SP): Value[] {
             }
         }
         if (f === "if") {
+            if (elems.length !== 3) {
+                throw new Error("if statement requires three arguments");
+            }
             return evaluateSE(elems[0], localVars)
                 ? evaluateSE(elems[1], localVars)
                 : evaluateSE(elems[2], localVars);
@@ -96,6 +124,9 @@ export function evaluateMiniLisp(sp: SP): Value[] {
                 body,
             };
         }
+        // if (f === "define") {
+        //     throw new Error("found a definition that is not at the top level");
+        // }
         const fv = localVars[f];
         if (typeof fv !== "object") {
             throw new Error(`function '${f}' not defined`);
@@ -106,10 +137,13 @@ export function evaluateMiniLisp(sp: SP): Value[] {
     function applyLambda(l: Lambda, v: SP, localVars: VarTable): Value {
         const newVars: VarTable = {
             ...localVars,
+            ...l.args.reduce((vars, param, i) => {
+                return {
+                    ...vars,
+                    [param]: evaluateSE(v[i], localVars),
+                };
+            }, {}),
         };
-        l.args.forEach((param, i) => {
-            newVars[param] = evaluateSE(v[i], localVars);
-        });
         return evaluateSE(l.body, newVars);
     }
 
