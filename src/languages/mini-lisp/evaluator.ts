@@ -1,16 +1,17 @@
 import {
-    SP, SE, SL, A,
+    SP, SE, SL, A, Lambda
 } from "./grammar";
-import inbuiltFunctions from "./inbuilt-functions";
 
 // SP -> SE | SE SP
 // SE -> A | SL
 // SL -> ( SP )
 // A -> number | boolean | string
 
-type VarTable = Record<string, any>;
+type VarTable = Record<string, Value>;
 
-export function evaluateMiniLisp(sp: SP): (number | boolean)[] {
+type Value = number | boolean | Lambda;
+
+export function evaluateMiniLisp(sp: SP): Value[] {
     const varTable: VarTable = {};
 
     // evaluate root SP
@@ -19,9 +20,9 @@ export function evaluateMiniLisp(sp: SP): (number | boolean)[] {
         return v === null
             ? arr
             : [...arr, v];
-    }, [] as (number | boolean)[]);
+    }, [] as Value[]);
     
-    function evaluateSE(se: SE, localVars: VarTable): number | boolean | null {
+    function evaluateSE(se: SE, localVars: VarTable): Value {
         if (typeof se === "object") {
             return evaluateSL(se, localVars)
         } else {
@@ -29,98 +30,99 @@ export function evaluateMiniLisp(sp: SP): (number | boolean)[] {
         }
     }
     
-    function evaluateSL(sl: SL, localVars: VarTable): number | boolean | null {
-        const { content } = sl;
-        const [op, ...args] = content;
-        // SL is a define statement
-        if (op === "define") {
-            evaluateDefine(sl, localVars);
-            return null;
+    function evaluateSL(sl: SL, localVars: VarTable): Value {
+        const [f, ...elems] = sl.content;
+        if (typeof f !== "string") {
+            throw new Error("first element of S-Expr must be function name");
         }
-        if (op === "local") {
-            return evaluateLocal(args[0], args[1], localVars);
-        }
-        // SL is a regular SL, look for function
-        if (typeof op === "string") {
-            const inBuiltF = inbuiltFunctions[op];
-            if (inBuiltF) {
-                return inBuiltF(...args.map(a => evaluateSE(a, localVars)));
+        if (["+", "-", "*", "/", "=", "<", ">"].includes(f as string)) {
+            const a = evaluateSE(elems[0], localVars);
+            const b = evaluateSE(elems[1], localVars);
+            if (f === "=") {
+                return a === b;
+            }
+            if (typeof a !== "number" || typeof b !== "number") {
+                throw new Error("arguments must be numbers");
+            }
+            if (f === "+") {
+                return a + b;
+            }
+            if (f === "-") {
+                return a - b;
+            }
+            if (f === "*") {
+                return a * b;
+            }
+            if (f === "/") {
+                return a / b;
+            }
+            if (f === ">") {
+                return a > b;
+            }
+            if (f === "<") {
+                return a < b;
             }
         }
-        const opF = typeof op === "string"
-            ? localVars[op]
-            : op;
-        if (typeof opF === "object" && opF.content[0] === "lambda") {
-            return evaluateLambda(opF, args, localVars);
+        if (f === "if") {
+            return evaluateSE(elems[0], localVars)
+                ? evaluateSE(elems[1], localVars)
+                : evaluateSE(elems[2], localVars);
         }
-        throw new Error("first argument of SE must be a function")
+        if (f === "let") {
+            const decl = elems[0];
+            if (typeof decl !== "object") {
+                throw new Error("illegal let format");
+            }
+            const varName = decl.content[0];
+            const varVal = decl.content[1];
+            if (typeof varName !== "string") {
+                throw new Error("variable name must be string");
+            }
+            const newVars = {
+                ...localVars,
+                [varName]: evaluateSE(varVal, localVars),
+            }
+            const body = elems[1];
+            return evaluateSE(body, newVars);
+        }
+        if (f === "lambda") {
+            const arg = elems[0];
+            const body = elems[1];
+            if (typeof arg !== "string") {
+                throw new Error("function parameter must be a string");
+            }
+            return {
+                arg,
+                body,
+            };
+        }
+        const fv = localVars[f];
+        if (typeof fv !== "object") {
+            throw new Error(`function '${f}' not defined`);
+        }
+        return applyLambda(fv, elems[0], localVars);
     }
 
-    function evaluateA(a: A, localVars: VarTable): number | boolean | null {
+    function applyLambda(l: Lambda, v: SE, localVars: VarTable): Value {
+        const param = evaluateSE(v, localVars);
+        const newVars: VarTable = {
+            ...localVars,
+            [l.arg]: param,
+        };
+        console.log(`value is ${param}`);
+        return evaluateSE(l.body, newVars);
+    }
+
+    function evaluateA(a: A, localVars: VarTable): Value {
         if (typeof a === "number" || typeof a === "boolean") {
             return a;
         }
+        const val = localVars[a];
         if (localVars[a] === undefined) {
             throw new Error(`undefined variable ${a}`);
         }
-        return evaluateSE(localVars[a], localVars);
+        return val;
     }
 
-    function evaluateLocal(defines: SE, body: SE, localVars: VarTable): number | boolean | null {
-        if (typeof defines !== "object") {
-            throw new Error("defines section in local must be a list of define statements");
-        }
-        defines.content.forEach((line) => {
-            if (typeof line !== "object" || line.content[0] !== "define") {
-                throw new Error("each statement in defines section of local must be a define statement");
-            }
-            evaluateDefine(line, localVars);
-        });
-        return evaluateSE(body, localVars);
-    }
-
-    function evaluateDefine(sl: SL, localVars: VarTable) {
-        const [op, ...args] = sl.content;
-        const firstArg = args[0];
-        if (typeof firstArg === "object") {
-            // (define (x) ...) shorthand
-            const [fName, ...paramArgs] = firstArg.content;
-            if (typeof fName !== "string") {
-                throw new Error("function variable name must be a string");
-            }
-            localVars[fName] = {
-                content: [
-                    "lambda",
-                    { content: paramArgs },
-                    args[1]
-                ],
-            };
-        } else {
-            // regular define statement
-            if (typeof firstArg !== "string") {
-                throw new Error("variable name must be a string");
-            }
-            localVars[firstArg] = args[1];
-        }
-    }
-
-    function evaluateLambda(l: SE, args: SE[], localVars: VarTable): number | boolean | null {
-        const lambdaVars = {
-            ...localVars,
-        };
-        if (typeof l !== "object" || l.content[0] !== "lambda") {
-            throw new Error("not a lambda function");
-        }
-        const lArgs = l.content[1]
-        const lBody = l.content[2];
-        if (typeof lArgs !== "object" || lArgs.content.some(x => typeof x !== "string")) {
-            throw new Error("arguments of lambda expression must be all strings inside ( )");
-        }
-        const varNames = lArgs.content as string[];
-        varNames.forEach((varName, i) => {
-            lambdaVars[varName] = args[i];
-        });
-        return evaluateSE(lBody, lambdaVars);
-    }
 }
 

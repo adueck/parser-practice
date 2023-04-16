@@ -1,16 +1,18 @@
 export const cListGrammar = `C -> [ES]
 ES -> ε | E ESTail
 ESTail -> ε | , E ESTail
-E -> n | C`
+E -> number | C`;
 
-// Alternate ES
-// ES -> E | ε
+// Alternate with double lookahead
+// C -> [ES]
+// ES -> ε | E
+// E -> I | I , E
+// I -> number | C
 
-// double lookahead
-// E -> number | number , E
-// single lookahead
-// E -> ε | number ETail
-// ETail -> ε | , number ETail
+// Alternate with double lookahead - non empty
+// C -> [ES]
+// ES -> I | I , E
+// I -> number | C
 
 export type CList = Element[];
 export type Element = number | CList;
