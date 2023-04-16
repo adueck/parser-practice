@@ -10,8 +10,8 @@ Semantic rules:
  - inbuilt functions are + - * / = < >
  - LISP like
    - if: (if SE SE SE)
-   - variable defs: (let (string SE) SE)
-   - lambda functions: (lambda string SE)
+   - variable defs: (let (varName SE) SE)
+   - lambda functions: (lambda (args...) SE)
 `;
 
 export type SP = SE[];
@@ -23,7 +23,7 @@ export type SL = {
 };
 
 export type Lambda = {
-  arg: string,
+  args: string[],
   body: SE,
 };
 

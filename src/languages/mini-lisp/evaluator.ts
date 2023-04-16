@@ -86,13 +86,13 @@ export function evaluateMiniLisp(sp: SP): Value[] {
             return evaluateSE(body, newVars);
         }
         if (f === "lambda") {
-            const arg = elems[0];
-            const body = elems[1];
-            if (typeof arg !== "string") {
-                throw new Error("function parameter must be a string");
+            const args = elems[0];
+            if (typeof args !== "object") {
+                throw new Error("args for lambda must be s-expr of strings");
             }
+            const body = elems[1];
             return {
-                arg,
+                args: args.content as string[],
                 body,
             };
         }
@@ -100,15 +100,16 @@ export function evaluateMiniLisp(sp: SP): Value[] {
         if (typeof fv !== "object") {
             throw new Error(`function '${f}' not defined`);
         }
-        return applyLambda(fv, elems[0], localVars);
+        return applyLambda(fv, elems, localVars);
     }
 
-    function applyLambda(l: Lambda, v: SE, localVars: VarTable): Value {
-        const param = evaluateSE(v, localVars);
+    function applyLambda(l: Lambda, v: SP, localVars: VarTable): Value {
         const newVars: VarTable = {
             ...localVars,
-            [l.arg]: param,
         };
+        l.args.forEach((param, i) => {
+            newVars[param] = evaluateSE(v[i], localVars);
+        });
         return evaluateSE(l.body, newVars);
     }
 

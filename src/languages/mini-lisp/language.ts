@@ -19,7 +19,7 @@ export default {
         },
         {
             input: `(let
-  (fibb (lambda x (if (< x 3)
+  (fibb (lambda (x) (if (< x 3)
                       x
                       (+ (fibb (- x 2)) (fibb (- x 1))))))
     (fibb 7))`,
@@ -31,6 +31,11 @@ export default {
   (let (y 3)
     (+ x y)))`,
             value: [9, 5],            
+        },
+        {
+            input: `(let (addMe (lambda (x y z) (+ (+ x y) z)))
+  (addMe 3 7 2))`,
+            value: [12],
         },
     ],
     errors: [
