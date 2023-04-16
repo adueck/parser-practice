@@ -41,30 +41,23 @@ export function evaluateMiniLisp(sp: SP): Value[] {
         if (typeof f !== "string") {
             throw new Error("first element of S-Expr must be function name");
         }
-        if (["+", "-", "*", "/", "=", "<", ">"].includes(f as string)) {
-            function getNum(se: SE): number {
-                const n = evaluateSE(se, localVars);
-                if (typeof n !== "number") {
-                    throw new Error("each argument must be a number");
-                }
-                return n;
-            }
+        if (["+", "-", "*", "/", "=", "<", ">", "<=", ">="].includes(f as string)) {
             if (f === "+") {
                 return elems.reduce<number>((val, e) => {
-                    return val + getNum(e);
+                    return val + getNum(e, f);
                 }, 0);
             }
             if (f === "-") {
                 if (elems.length === 1) {
-                    return - getNum(elems[0]);
+                    return - getNum(elems[0], f);
                 }
                 return elems.slice(1).reduce<number>((val, e) => {
-                    return val - getNum(e);
-                }, getNum(elems[0]));
+                    return val - getNum(e, f);
+                }, getNum(elems[0], f));
             }
             if (f === "*") {
                 return elems.reduce<number>((val, e) => {
-                    return val * getNum(e);
+                    return val * getNum(e, f);
                 }, 1);
             }
             if (f === "/") {
@@ -72,20 +65,39 @@ export function evaluateMiniLisp(sp: SP): Value[] {
                     throw new Error("/ expects at least one argument");
                 }
                 return elems.slice(1).reduce<number>((val, e) => {
-                    return val * getNum(e);
-                }, getNum(elems[0]));
+                    return val * getNum(e, f);
+                }, getNum(elems[0], f));
             }
-            // TODO: reduce / multi arg here
-            const a = evaluateSE(elems[0], localVars);
-            const b = evaluateSE(elems[1], localVars);
             if (f === "=") {
-                return a === b;
+                return dist(elems, (a, b) => a === b);
             }
             if (f === ">") {
-                return a > b;
+                return dist(elems, (a, b) => a > b);
             }
             if (f === "<") {
-                return a < b;
+                return dist(elems, (a, b) => a < b);
+            }
+            if (f === ">=") {
+                return dist(elems, (a, b) => a >= b);
+            }
+            if (f === "<=") {
+                return dist(elems, (a, b) => a <= b);
+            }
+            function dist(args: SE[], f: (a: Value, b: Value) => boolean): boolean {
+                const [x, y, ...rest] = args;
+                if (x === undefined || y === undefined) {
+                    return true;
+                }
+                const xv = evaluateSE(x, localVars);
+                const yv = evaluateSE(y, localVars);
+                return f(xv, yv) && dist([y, ...rest], f);
+            }
+            function getNum(se: SE, fn: string): number {
+                const n = evaluateSE(se, localVars);
+                if (typeof n !== "number") {
+                    throw new Error(`each argument for ${fn} must be a number`);
+                }
+                return n;
             }
         }
         if (f === "if") {
