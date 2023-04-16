@@ -38,6 +38,21 @@ export default {
   (addMe 3 7 2))`,
             value: [12],
         },
+        {
+            input:`(define lim 32)
+(define (canPlay c total) (< (+ c total) lim))
+(canPlay 5 10)
+(canPlay 30 3)            
+`,
+            value: [true, false],
+        },
+        {
+            input: `(local
+    ((define x 1)
+     (define y 5))
+        (- x y))`,
+            value: [-4],
+        },
     ],
     errors: [
         "(+ 3 2",

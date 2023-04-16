@@ -22,11 +22,40 @@ export function evaluateMiniLisp(sp: SP): Value[] {
     // evaluate root SP
     return sp.reduce((arr, s) => {
         // check for top-level defines here
+        if (typeof s === "object" && s.content[0] === "define") {
+            handleDefine(s, varTable);
+            return arr;
+        }
         const v = evaluateSE(s, varTable);
         return v === null
             ? arr
             : [...arr, v];
     }, [] as Value[]);
+
+    function handleDefine(s: SE, localVars: VarTable) {
+        if (typeof s !== "object" || s.content[0] !== "define") {
+            throw new Error("expected define statement");
+        }
+        const varName = s.content[1];
+        const value = s.content[2];
+        if (typeof varName === "object") {
+            if (varName.content.some(x => typeof x !== "string")) {
+                throw new Error("function name and all params must be strings");
+            }
+            localVars[varName.content[0] as string] = {
+                args: varName.content.slice(1) as string[],
+                body: value,
+            };
+            return;
+        }
+        if (typeof varName !== "string") {
+            throw new Error("variable name for define statement must be a string");
+        }
+        if (value === undefined) {
+            throw new Error("value for variable definition required");
+        }
+        localVars[varName] = evaluateSE(value, localVars);
+    }
     
     function evaluateSE(se: SE, localVars: VarTable): Value {
         if (typeof se === "object") {
@@ -77,12 +106,6 @@ export function evaluateMiniLisp(sp: SP): Value[] {
             if (f === "<") {
                 return dist(elems, (a, b) => a < b);
             }
-            if (f === ">=") {
-                return dist(elems, (a, b) => a >= b);
-            }
-            if (f === "<=") {
-                return dist(elems, (a, b) => a <= b);
-            }
             function dist(args: SE[], f: (a: Value, b: Value) => boolean): boolean {
                 const [x, y, ...rest] = args;
                 if (x === undefined || y === undefined) {
@@ -99,6 +122,18 @@ export function evaluateMiniLisp(sp: SP): Value[] {
                 }
                 return n;
             }
+        }
+        if (f === "local") {
+            const defines = elems[0];
+            const body = elems[1];
+            if (typeof defines !== "object") {
+                throw new Error("defines section of local statement must be list of defiine statemens");
+            }
+            if (body === undefined) {
+                throw new Error("body of local statement missing");
+            }
+            defines.content.forEach((x) => handleDefine(x, localVars));
+            return evaluateSE(body, localVars);
         }
         if (f === "if") {
             if (elems.length !== 3) {
@@ -136,9 +171,9 @@ export function evaluateMiniLisp(sp: SP): Value[] {
                 body,
             };
         }
-        // if (f === "define") {
-        //     throw new Error("found a definition that is not at the top level");
-        // }
+        if (f === "define") {
+            throw new Error("found a definition that is not at the top level");
+        }
         const fv = localVars[f];
         if (typeof fv !== "object") {
             throw new Error(`function '${f}' not defined`);
@@ -171,4 +206,3 @@ export function evaluateMiniLisp(sp: SP): Value[] {
     }
 
 }
-

@@ -7,11 +7,15 @@ A -> number | boolean | string
 
 Semantic rules:
  - The first SE in a SL must be a function or reference to a function
- - inbuilt functions are + - * / = < > <= >=
- - LISP like
-   - if: (if SE SE SE)
-   - variable defs: (let (varName SE) SE)
-   - lambda functions: (lambda (args...) SE)
+ - inbuilt functions are + - * / = < >
+ - if: (if SE SE SE)
+ - variable defs:
+   - (let (varName SE) SE)
+   - (local ((define varName SE) ...) SE)
+ - lambda functions: (lambda (args...) SE)
+ - top level definitions
+   - (define varName SE)
+   - (define (funName args...) SE)
 `;
 
 export type SP = SE[];
