@@ -34,7 +34,7 @@ export default {
             value: [-5, 9, 5],            
         },
         {
-            input: `(let (addMe (lambda (x y z) (+ (+ x y) z)))
+            input: `(let (addMe (lambda (x y z) (+ x y z)))
   (addMe 3 7 2))`,
             value: [12],
         },

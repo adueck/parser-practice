@@ -127,7 +127,7 @@ export function evaluateMiniLisp(sp: SP): Value[] {
         }
         if (f === "lambda") {
             const args = elems[0];
-            if (typeof args !== "object") {
+            if (typeof args !== "object" || args.content.some(x => typeof x !== "string")) {
                 throw new Error("args for lambda must be s-expr of strings");
             }
             const body = elems[1];
