@@ -109,7 +109,6 @@ export function evaluateMiniLisp(sp: SP): Value[] {
             ...localVars,
             [l.arg]: param,
         };
-        console.log(`value is ${param}`);
         return evaluateSE(l.body, newVars);
     }
 
