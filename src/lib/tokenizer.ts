@@ -25,6 +25,5 @@ export function tokenizer(l: string): (number | string)[] {
         }
     }
     cleanOutChars();
-    console.log({ tokens });
     return tokens;
 }

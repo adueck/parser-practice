@@ -4,6 +4,7 @@ import ternaryLanguage from "./ternary/language";
 import expressionLanguage from "./expressions/language";
 import cListLanguage from "./comma-list/language";
 import jsonLanguage from "./json/language";
+import bnfLanguage from "./bnf/language";
 // import romanNumeralsLanguage from "./roman-numerals.ts/language";
 
 export const languages: {
@@ -24,5 +25,6 @@ export const languages: {
     cListLanguage,
     ternaryLanguage,
     jsonLanguage,
+    bnfLanguage,
     // romanNumeralsLanguage,
 ];

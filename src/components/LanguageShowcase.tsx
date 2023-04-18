@@ -95,7 +95,12 @@ ${`>>`} ${JSON.stringify(ex.value)}`
       </form>
       {result !== "" && <div>
         <div className="py-2">Result:</div>
-        <samp><pre>{JSON.stringify(result, null, "  ")}</pre></samp>
+        <samp>
+          <pre>{typeof result === "string"
+            ? result
+            : JSON.stringify(result, null, "  ")}
+          </pre>
+        </samp>
       </div>}
       {tree && <div className="py-2">
         <details>

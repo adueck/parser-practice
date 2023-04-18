@@ -38,21 +38,22 @@ export function evaluateMiniLisp(sp: SP): Value[] {
         }
         const varName = s.content[1];
         const value = s.content[2];
+        if (value === undefined) {
+            throw new Error("value for variable definition required");
+        }
         if (typeof varName === "object") {
-            if (varName.content.some(x => typeof x !== "string")) {
-                throw new Error("function name and all params must be strings");
-            }
-            localVars[varName.content[0] as string] = {
-                args: varName.content.slice(1) as string[],
-                body: value,
-            };
+            // define (funName args ...) desugaring 'macro'
+            handleDefine({
+                content: ["define", varName.content[0], {
+                    content: ["lambda", {
+                        content: varName.content.slice(1),
+                    }, value],
+                }],
+            }, localVars);
             return;
         }
         if (typeof varName !== "string") {
             throw new Error("variable name for define statement must be a string");
-        }
-        if (value === undefined) {
-            throw new Error("value for variable definition required");
         }
         localVars[varName] = evaluateSE(value, localVars);
     }
@@ -70,7 +71,7 @@ export function evaluateMiniLisp(sp: SP): Value[] {
         if (typeof f !== "string") {
             throw new Error("first element of S-Expr must be function name");
         }
-        if (["+", "-", "*", "/", "=", "<", ">", "<=", ">="].includes(f as string)) {
+        if (["+", "-", "*", "/", "=", "<", ">"].includes(f as string)) {
             if (f === "+") {
                 return elems.reduce<number>((val, e) => {
                     return val + getNum(e, f);
@@ -150,15 +151,21 @@ export function evaluateMiniLisp(sp: SP): Value[] {
             }
             const varName = decl.content[0];
             const varVal = decl.content[1];
-            if (typeof varName !== "string") {
-                throw new Error("variable name must be string");
-            }
-            const newVars = {
-                ...localVars,
-                [varName]: evaluateSE(varVal, localVars),
-            }
             const body = elems[1];
-            return evaluateSE(body, newVars);
+            // desugar let statements into local statements 'macro'
+            return evaluateSE({
+                content: [
+                    "local",
+                    {
+                        content: [
+                            {
+                                content: ["define", varName, varVal],
+                            },
+                        ],
+                    },
+                    body,
+                ],
+            }, localVars);
         }
         if (f === "lambda") {
             const args = elems[0];
@@ -193,7 +200,7 @@ export function evaluateMiniLisp(sp: SP): Value[] {
         };
         return evaluateSE(l.body, newVars);
     }
-
+    
     function evaluateA(a: A, localVars: VarTable): Value {
         if (typeof a === "number" || typeof a === "boolean") {
             return a;
