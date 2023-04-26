@@ -43,7 +43,7 @@ function parseMiniLisp(tokens: Readonly<(string|number)[]>): SP {
         if (a === undefined) {
             return "expected atom";
         }
-        return ["t", "f", "true", "false"].includes(a as string)
+        return ["#t", "#f", "true", "false", "#true", "#false"].includes(a as string)
             ? (a === "t" || a === "true")
             : a;
     }

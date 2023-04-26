@@ -53,6 +53,18 @@ export default {
         (- x y))`,
             value: [-4],
         },
+        {
+            input: `((let (x 1)
+    (lambda (y) x)) 4)`,
+            value: [1],
+        },
+        {
+            input: `(let (x 1)
+    (let (f (lambda (y) x))
+        (let (x 2)
+            (f 10))))`,
+            value: [1],
+        },
     ],
     errors: [
         "(+ 3 2",

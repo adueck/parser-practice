@@ -1,6 +1,7 @@
 import {
     SP, SE, SL, A,
 } from "./grammar";
+import { funMacro, letMacro } from "./macros";
 
 // SP -> SE | SE SP
 // SE -> A | SL
@@ -9,12 +10,13 @@ import {
 
 type VarTable = Record<string, Value>;
 
-export type Lambda = {
+export type Function = {
     args: string[],
     body: SE,
+    env: VarTable,
 };
 
-type Value = number | boolean | Lambda;
+type Value = number | boolean | Function;
 
 export function evaluateMiniLisp(sp: SP): Value[] {
     const varTable: VarTable = {};
@@ -23,7 +25,7 @@ export function evaluateMiniLisp(sp: SP): Value[] {
     return sp.reduce((arr, s) => {
         // check for top-level defines here
         if (typeof s === "object" && s.content[0] === "define") {
-            handleDefine(s, varTable);
+            Object.assign(varTable, handleDefine(s, varTable));
             return arr;
         }
         const v = evaluateSE(s, varTable);
@@ -32,7 +34,7 @@ export function evaluateMiniLisp(sp: SP): Value[] {
             : [...arr, v];
     }, [] as Value[]);
 
-    function handleDefine(s: SE, localVars: VarTable) {
+    function handleDefine(s: SE, localVars: VarTable): VarTable {
         if (typeof s !== "object" || s.content[0] !== "define") {
             throw new Error("expected define statement");
         }
@@ -42,20 +44,14 @@ export function evaluateMiniLisp(sp: SP): Value[] {
             throw new Error("value for variable definition required");
         }
         if (typeof varName === "object") {
-            // define (funName args ...) desugaring 'macro'
-            handleDefine({
-                content: ["define", varName.content[0], {
-                    content: ["lambda", {
-                        content: varName.content.slice(1),
-                    }, value],
-                }],
-            }, localVars);
-            return;
+            return handleDefine(funMacro(s), localVars);
         }
         if (typeof varName !== "string") {
             throw new Error("variable name for define statement must be a string");
         }
-        localVars[varName] = evaluateSE(value, localVars);
+        const newVars = structuredClone(localVars);
+        newVars[varName] = evaluateSE(value, newVars);
+        return newVars;
     }
     
     function evaluateSE(se: SE, localVars: VarTable): Value {
@@ -67,9 +63,12 @@ export function evaluateMiniLisp(sp: SP): Value[] {
     }
     
     function evaluateSL(sl: SL, localVars: VarTable): Value {
-        const [f, ...elems] = sl.content;
-        if (typeof f !== "string") {
-            throw new Error("first element of S-Expr must be function name");
+        const [fS, ...elems] = sl.content;
+        const f = typeof fS === "string"
+            ? fS
+            : evaluateSE(fS, localVars);
+        if (typeof f === "boolean") {
+            throw new Error("boolean found instead of function at beginning of S-expr");
         }
         if (["+", "-", "*", "/", "=", "<", ">"].includes(f as string)) {
             if (f === "+") {
@@ -133,8 +132,11 @@ export function evaluateMiniLisp(sp: SP): Value[] {
             if (body === undefined) {
                 throw new Error("body of local statement missing");
             }
-            defines.content.forEach((x) => handleDefine(x, localVars));
-            return evaluateSE(body, localVars);
+            const newVars = defines.content.reduce((vars, x) => ({
+                ...vars,
+                ...handleDefine(x, localVars),
+            }), localVars);
+            return evaluateSE(body, newVars);
         }
         if (f === "if") {
             if (elems.length !== 3) {
@@ -145,27 +147,7 @@ export function evaluateMiniLisp(sp: SP): Value[] {
                 : evaluateSE(elems[2], localVars);
         }
         if (f === "let") {
-            const decl = elems[0];
-            if (typeof decl !== "object") {
-                throw new Error("illegal let format");
-            }
-            const varName = decl.content[0];
-            const varVal = decl.content[1];
-            const body = elems[1];
-            // desugar let statements into local statements 'macro'
-            return evaluateSE({
-                content: [
-                    "local",
-                    {
-                        content: [
-                            {
-                                content: ["define", varName, varVal],
-                            },
-                        ],
-                    },
-                    body,
-                ],
-            }, localVars);
+            return evaluateSL(letMacro(sl), localVars);
         }
         if (f === "lambda") {
             const args = elems[0];
@@ -176,19 +158,20 @@ export function evaluateMiniLisp(sp: SP): Value[] {
             return {
                 args: args.content as string[],
                 body,
+                env: localVars,
             };
         }
         if (f === "define") {
             throw new Error("found a definition that is not at the top level");
         }
-        const fv = localVars[f];
+        const fv = typeof f === "object" ? f : localVars[f];
         if (typeof fv !== "object") {
             throw new Error(`function '${f}' not defined`);
         }
         return applyLambda(fv, elems, localVars);
     }
 
-    function applyLambda(l: Lambda, v: SP, localVars: VarTable): Value {
+    function applyLambda(l: Function, v: SP, localVars: VarTable): Value {
         const newVars: VarTable = {
             ...localVars,
             ...l.args.reduce((vars, param, i) => {
@@ -197,6 +180,7 @@ export function evaluateMiniLisp(sp: SP): Value[] {
                     [param]: evaluateSE(v[i], localVars),
                 };
             }, {}),
+            ...l.env,
         };
         return evaluateSE(l.body, newVars);
     }
