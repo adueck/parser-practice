@@ -1,3 +1,4 @@
+import { cloneElement } from "react";
 import {
     SP, SE, SL, A,
 } from "./grammar";
@@ -49,9 +50,10 @@ export function evaluateMiniLisp(sp: SP): Value[] {
         if (typeof varName !== "string") {
             throw new Error("variable name for define statement must be a string");
         }
-        const newVars = structuredClone(localVars);
-        newVars[varName] = evaluateSE(value, newVars);
-        return newVars;
+        return {
+            ...structuredClone(localVars),
+            [varName]: evaluateSE(value, localVars),
+        };
     }
     
     function evaluateSE(se: SE, localVars: VarTable): Value {
@@ -168,19 +170,19 @@ export function evaluateMiniLisp(sp: SP): Value[] {
         if (typeof fv !== "object") {
             throw new Error(`function '${f}' not defined`);
         }
-        return applyLambda(fv, elems, localVars);
+        return applyFunction(fv, elems, localVars);
     }
 
-    function applyLambda(l: Function, v: SP, localVars: VarTable): Value {
+    function applyFunction(l: Function, v: SP, localVars: VarTable): Value {
         const newVars: VarTable = {
-            ...localVars,
+            ...structuredClone(localVars),
             ...l.args.reduce((vars, param, i) => {
                 return {
                     ...vars,
                     [param]: evaluateSE(v[i], localVars),
                 };
             }, {}),
-            ...l.env,
+            ...structuredClone(l.env),
         };
         return evaluateSE(l.body, newVars);
     }
