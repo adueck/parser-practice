@@ -1,8 +1,8 @@
 import { cloneElement } from "react";
 import {
-    SP, SE, SL, A,
+    SE, A,
 } from "./grammar";
-import { funMacro, letMacro } from "./macros";
+import { funMacro, letMacro, strictIfMacro } from "./macros";
 
 // SP -> SE | SE SP
 // SE -> A | SL
@@ -17,15 +17,15 @@ export type Function = {
     env: VarTable,
 };
 
-type Value = number | boolean | Function;
+type Value = number | boolean | Function | string;
 
-export function evaluateMiniLisp(sp: SP): Value[] {
+export function evaluateMiniLisp(sp: SE[]): Value[] {
     const varTable: VarTable = {};
 
     // evaluate root SP
     return sp.reduce((arr, s) => {
         // check for top-level defines here
-        if (typeof s === "object" && s.content[0] === "define") {
+        if (Array.isArray(s) && s[0] === "define") {
             Object.assign(varTable, handleDefine(s, varTable));
             return arr;
         }
@@ -36,15 +36,15 @@ export function evaluateMiniLisp(sp: SP): Value[] {
     }, [] as Value[]);
 
     function handleDefine(s: SE, localVars: VarTable): VarTable {
-        if (typeof s !== "object" || s.content[0] !== "define") {
+        if (!Array.isArray(s) || s[0] !== "define") {
             throw new Error("expected define statement");
         }
-        const varName = s.content[1];
-        const value = s.content[2];
+        const varName = s[1];
+        const value = s[2];
         if (value === undefined) {
             throw new Error("value for variable definition required");
         }
-        if (typeof varName === "object") {
+        if (Array.isArray(varName)) {
             return handleDefine(funMacro(s), localVars);
         }
         if (typeof varName !== "string") {
@@ -57,17 +57,18 @@ export function evaluateMiniLisp(sp: SP): Value[] {
     }
     
     function evaluateSE(se: SE, localVars: VarTable): Value {
-        if (typeof se === "object") {
+        if (Array.isArray(se)) {
             return evaluateSL(se, localVars)
         } else {
             return evaluateA(se, localVars);
         }
     }
     
-    function evaluateSL(sl: SL, localVars: VarTable): Value {
-        const [fS, ...elems] = sl.content;
+    function evaluateSL(sl: SE[], localVars: VarTable): Value {
+        const [fS, ...elems] = sl;
         const f = typeof fS === "string"
             ? fS
+            // this means I can use "strings" as function names! Is this a good idea??
             : evaluateSE(fS, localVars);
         if (typeof f === "boolean") {
             throw new Error("boolean found instead of function at beginning of S-expr");
@@ -125,18 +126,27 @@ export function evaluateMiniLisp(sp: SP): Value[] {
                 return n;
             }
         }
+        if (f === "boolean?") {
+            return typeof evaluateSE(elems[0], localVars) === "boolean";
+        }
+        if (f === "string?") {
+            return typeof evaluateSE(elems[0], localVars) === "string";
+        }
+        if (f === "number?") {
+            return typeof evaluateSE(elems[0], localVars) === "number";
+        }
         if (f === "local") {
             const defines = elems[0];
             const body = elems[1];
-            if (typeof defines !== "object") {
+            if (!Array.isArray(defines)) {
                 throw new Error("defines section of local statement must be list of defiine statemens");
             }
             if (body === undefined) {
                 throw new Error("body of local statement missing");
             }
-            const newVars = defines.content.reduce((vars, x) => ({
+            const newVars = defines.reduce((vars, x) => ({
                 ...vars,
-                ...handleDefine(x, localVars),
+                ...handleDefine(x, vars),
             }), localVars);
             return evaluateSE(body, newVars);
         }
@@ -148,23 +158,30 @@ export function evaluateMiniLisp(sp: SP): Value[] {
                 ? evaluateSE(elems[1], localVars)
                 : evaluateSE(elems[2], localVars);
         }
+        if (f === "strictIf") {
+            return evaluateSE(strictIfMacro(sl), localVars);
+        }
         if (f === "let") {
-            return evaluateSL(letMacro(sl), localVars);
+            return evaluateSE(letMacro(sl), localVars);
         }
         if (f === "lambda") {
             const args = elems[0];
-            if (typeof args !== "object" || args.content.some(x => typeof x !== "string")) {
+            if (!Array.isArray(args) || args.some(x => typeof x !== "string")) {
                 throw new Error("args for lambda must be s-expr of strings");
             }
             const body = elems[1];
             return {
-                args: args.content as string[],
+                args: args as string[],
                 body,
                 env: localVars,
             };
         }
         if (f === "define") {
             throw new Error("found a definition that is not at the top level");
+        }
+        if (f === "error") {
+            const msg = evaluateSE(elems[0], localVars);
+            throw new Error(typeof msg === "string" ? msg : JSON.stringify(msg));
         }
         const fv = typeof f === "object" ? f : localVars[f];
         if (typeof fv !== "object") {
@@ -173,8 +190,8 @@ export function evaluateMiniLisp(sp: SP): Value[] {
         return applyFunction(fv, elems, localVars);
     }
 
-    function applyFunction(l: Function, v: SP, localVars: VarTable): Value {
-        const newVars: VarTable = {
+    function applyFunction(l: Function, v: SE[], localVars: VarTable): Value {
+         const newVars: VarTable = {
             ...structuredClone(localVars),
             ...l.args.reduce((vars, param, i) => {
                 return {
@@ -190,6 +207,9 @@ export function evaluateMiniLisp(sp: SP): Value[] {
     function evaluateA(a: A, localVars: VarTable): Value {
         if (typeof a === "number" || typeof a === "boolean") {
             return a;
+        }
+        if (typeof a === "object") {
+            return a.s;
         }
         const val = localVars[a];
         if (localVars[a] === undefined) {

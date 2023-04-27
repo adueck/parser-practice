@@ -1,6 +1,6 @@
 import { useTokens } from "../../lib/useTokens";
 import {
-    SE, A, SP, SL,
+    SE, A,
 } from "./grammar";
 
 // SP -> SE | SE SP
@@ -8,40 +8,41 @@ import {
 // SL -> ( SP )
 // A -> number | boolean | string
 
-function parseMiniLisp(tokens: Readonly<(string|number)[]>): SP {
+function parseMiniLisp(tokens: Readonly<(string|number)[]>): SE {
     const t = useTokens(tokens);
-    const sp = parseSP();
+    const sp = parseElements();
     if (!t.isEmpty()) {
         throw new Error("trailing tokens");
     }
     return sp;
-    function parseSP(): SP {
+    function parseElements(): SE[] {
         const first = parseSE();
         if (t.lookahead() === undefined || t.lookahead() === ")") {
             return [first];
         }
-        return [first, ...parseSP()];
+        return [first, ...parseElements()];
     }
     function parseSE(): SE {
         if (t.lookahead() !== "(") {
             return parseA();
         } else {
-            return parseSL();
+            t.match("(");
+            const s = parseElements();
+            t.match(")");
+            return s;
         }
-    }
-    function parseSL(): SL {
-        t.match("(");
-        const sl: SL = {
-            content: parseSP(),
-        };
-        t.match(")");
-        return sl;
     }
     function parseA(): A {
         const a = t.lookahead();
         t.consume();
         if (a === undefined) {
-            return "expected atom";
+            throw new Error("expected atom");
+        }
+        if (a === '"') {
+            const s = t.lookahead() as string;
+            t.consume();
+            t.match('"');
+            return { s };
         }
         return ["#t", "#f", "true", "false", "#true", "#false"].includes(a as string)
             ? (a === "t" || a === "true")
