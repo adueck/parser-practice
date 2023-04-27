@@ -159,12 +159,12 @@ export function evaluateMiniLisp(sp: SE[]): Value[] {
         }
         if (f === "lambda") {
             const args = elems[0];
-            if (!Array.isArray(args) || args.some(x => typeof x !== "string")) {
+            if (!Array.isArray(args) || !args.every<string>((x): x is string => typeof x === "string")) {
                 throw new Error("args for lambda must be s-expr of strings");
             }
             const body = elems[1];
             return {
-                args: args as string[],
+                args,
                 body,
                 env: localVars,
             };
