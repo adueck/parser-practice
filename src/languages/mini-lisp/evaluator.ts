@@ -1,8 +1,7 @@
-import { cloneElement } from "react";
 import {
     SE, A,
 } from "./grammar";
-import { funMacro, letMacro, strictIfMacro } from "./macros";
+import { funMacro, macros } from "./macros";
 
 // SP -> SE | SE SP
 // SE -> A | SL
@@ -158,12 +157,6 @@ export function evaluateMiniLisp(sp: SE[]): Value[] {
                 ? evaluateSE(elems[1], localVars)
                 : evaluateSE(elems[2], localVars);
         }
-        if (f === "strictIf") {
-            return evaluateSE(strictIfMacro(sl), localVars);
-        }
-        if (f === "let") {
-            return evaluateSE(letMacro(sl), localVars);
-        }
         if (f === "lambda") {
             const args = elems[0];
             if (!Array.isArray(args) || args.some(x => typeof x !== "string")) {
@@ -185,6 +178,12 @@ export function evaluateMiniLisp(sp: SE[]): Value[] {
         }
         const fv = typeof f === "object" ? f : localVars[f];
         if (typeof fv !== "object") {
+            if (typeof f === "string") {
+                const macro = macros[f];
+                if (macro) {
+                    return evaluateSE(macro(sl), localVars);
+                }
+            }
             throw new Error(`function '${f}' not defined`);
         }
         return applyFunction(fv, elems, localVars);

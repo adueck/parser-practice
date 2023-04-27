@@ -12,7 +12,7 @@ export function useTokens(tokens: Readonly<(string|number)[]>): {
     let ll: string | number | undefined = l;
     function match(t: string | number) {
         if (ll !== t) {
-            throw new Error("expected "+t);
+            throw new Error("expected "+t+" but found "+ll);
         }
         consume();
     }

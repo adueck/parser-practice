@@ -11,6 +11,7 @@ Semantic rules:
  - The first SE in a SL must be a function or reference to a function
  - inbuilt functions are + - * / = < >
  - if: (if SE SE SE)
+ - cond: (cond [SE SE] [SE SE] ...)
  - variable defs:
    - (let (varName SE) SE)
    - (local ((define varName SE) ...) SE)

@@ -65,6 +65,13 @@ export default {
             (f 10))))`,
             value: [1],
         },
+        {
+            input: `(cond
+    [(= 3 4) 10]
+    [#f 11]
+    [#t 12])`,
+            value: [12],
+        },
     ],
     errors: [
         "(+ 3 2",

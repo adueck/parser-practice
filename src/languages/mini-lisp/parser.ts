@@ -17,18 +17,20 @@ function parseMiniLisp(tokens: Readonly<(string|number)[]>): SE {
     return sp;
     function parseElements(): SE[] {
         const first = parseSE();
-        if (t.lookahead() === undefined || t.lookahead() === ")") {
+        if (t.lookahead() === undefined || t.lookahead() === ")" || t.lookahead() === "]") {
             return [first];
         }
         return [first, ...parseElements()];
     }
     function parseSE(): SE {
-        if (t.lookahead() !== "(") {
+        const l = t.lookahead();
+        if (l !== "(" && l !== "[") {
             return parseA();
         } else {
-            t.match("(");
+            const closer = l === "(" ? ")" : "]";
+            t.match(l);
             const s = parseElements();
-            t.match(")");
+            t.match(closer);
             return s;
         }
     }
@@ -45,7 +47,7 @@ function parseMiniLisp(tokens: Readonly<(string|number)[]>): SE {
             return { s };
         }
         return ["#t", "#f", "true", "false", "#true", "#false"].includes(a as string)
-            ? (a === "t" || a === "true")
+            ? (a === "t" || a === "true" || a === "#t" || a === "#true")
             : a;
     }
 }
